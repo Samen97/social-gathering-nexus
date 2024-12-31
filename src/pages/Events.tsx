@@ -31,15 +31,6 @@ const Events = () => {
     },
   });
 
-  if (isLoading) {
-    return (
-      <div>
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">Loading events...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
       <Navbar />
@@ -53,28 +44,40 @@ const Events = () => {
             </Button>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events?.map((event) => (
-            <EventCard
-              key={event.id}
-              title={event.title}
-              date={new Date(event.date).toLocaleDateString("en-US", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-              })}
-              location={event.location}
-              description={event.description || ""}
-              imageUrl={event.image_url || "/placeholder.svg"}
-              attendees={event.event_attendees?.length || 0}
-              isOfficial={event.is_official}
-              onClick={() => navigate(`/events/${event.id}`)}
-            />
-          ))}
-        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="animate-pulse bg-white rounded-lg shadow-md h-96"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {events?.map((event) => (
+              <EventCard
+                key={event.id}
+                title={event.title}
+                date={new Date(event.date).toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "numeric",
+                })}
+                location={event.location}
+                description={event.description || ""}
+                imageUrl={event.image_url || "/placeholder.svg"}
+                attendees={event.event_attendees?.length || 0}
+                isOfficial={event.is_official}
+                onClick={() => navigate(`/events/${event.id}`)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
