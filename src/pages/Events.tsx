@@ -22,7 +22,7 @@ const Events = () => {
             status,
             user_id
           ),
-          profiles(full_name)
+          created_by_profile:profiles!inner(full_name)
         `)
         .order("date", { ascending: true });
 
