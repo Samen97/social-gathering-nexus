@@ -10,6 +10,34 @@ const COMMUNITY_STATS = [
   { icon: Heart, label: "Connections Made", value: "1000+" },
 ];
 
+const FEATURED_EVENTS = [
+  {
+    title: "South Manchester Book Club",
+    date: "Next Saturday at 3:00 PM",
+    location: "Didsbury Library",
+    description: "Join us for an engaging discussion of this month's book selection. All reading enthusiasts welcome!",
+    imageUrl: "/placeholder.svg",
+    attendees: 12,
+    isOfficial: true,
+  },
+  {
+    title: "Chorlton Coffee Morning",
+    date: "Every Tuesday at 10:00 AM",
+    location: "The Edge, Chorlton",
+    description: "Weekly casual coffee meetup. Come along for great conversations and even better coffee!",
+    imageUrl: "/placeholder.svg",
+    attendees: 8,
+  },
+  {
+    title: "Levenshulme Market Social",
+    date: "This Saturday at 11:00 AM",
+    location: "Levenshulme Market",
+    description: "Explore the market together and grab lunch from local vendors. Perfect for foodies and social butterflies!",
+    imageUrl: "/placeholder.svg",
+    attendees: 15,
+  },
+];
+
 const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
