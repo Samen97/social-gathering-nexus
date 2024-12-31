@@ -22,7 +22,7 @@ const Events = () => {
             status,
             user_id
           ),
-          profiles!events_created_by_fkey(full_name)
+          profiles(full_name)
         `)
         .order("date", { ascending: true });
 
