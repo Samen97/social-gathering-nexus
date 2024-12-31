@@ -10,6 +10,7 @@ const FEATURED_EVENTS = [
     description:
       "Join us for a guided walk through Manchester's vibrant street art scene. Perfect for photography enthusiasts and art lovers!",
     imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81",
+    attendees: 12,
   },
   {
     title: "Coffee & Code Social",
@@ -18,6 +19,7 @@ const FEATURED_EVENTS = [
     description:
       "Whether you're a seasoned developer or just starting out, come along for coffee and casual coding conversations!",
     imageUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    attendees: 8,
   },
   {
     title: "Weekend Hiking Adventure",
@@ -26,6 +28,7 @@ const FEATURED_EVENTS = [
     description:
       "A beginner-friendly hike through some of the most beautiful trails in the Peak District. Transportation provided.",
     imageUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
+    attendees: 15,
   },
 ];
 
