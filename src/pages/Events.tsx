@@ -18,11 +18,11 @@ const Events = () => {
         .from("events")
         .select(`
           *,
-          profiles:created_by(full_name),
           event_attendees(
             status,
             user_id
-          )
+          ),
+          creator:profiles!events_created_by_fkey(full_name)
         `)
         .order("date", { ascending: true });
 
