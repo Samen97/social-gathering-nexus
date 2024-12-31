@@ -1,10 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useSession } from "@supabase/auth-helpers-react";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+  const session = useSession();
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
+
+  const handleSignIn = () => {
+    navigate("/auth");
+  };
 
   return (
     <nav className="bg-white shadow-sm">
@@ -22,7 +35,15 @@ export const Navbar = () => {
             <Link to="/about" className="text-gray-600 hover:text-primary">
               About
             </Link>
-            <Button variant="default">Sign In</Button>
+            {session ? (
+              <Button variant="default" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            ) : (
+              <Button variant="default" onClick={handleSignIn}>
+                Sign In
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -53,9 +74,15 @@ export const Navbar = () => {
               >
                 About
               </Link>
-              <Button variant="default" className="w-full">
-                Sign In
-              </Button>
+              {session ? (
+                <Button variant="default" onClick={handleSignOut} className="w-full">
+                  Sign Out
+                </Button>
+              ) : (
+                <Button variant="default" onClick={handleSignIn} className="w-full">
+                  Sign In
+                </Button>
+              )}
             </div>
           </div>
         )}
