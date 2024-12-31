@@ -22,8 +22,9 @@ const Events = () => {
             status,
             user_id
           ),
-          creator:profiles!events_created_by_fkey(full_name)
+          creator:profiles(full_name)
         `)
+        .eq('created_by', 'profiles.id')
         .order("date", { ascending: true });
 
       if (error) throw error;
