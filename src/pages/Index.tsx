@@ -1,35 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/EventCard";
 import { Navbar } from "@/components/Navbar";
+import { Calendar, Users, MapPin, Heart } from "lucide-react";
 
-const FEATURED_EVENTS = [
-  {
-    title: "Manchester Art Walk",
-    date: "Saturday, April 20th at 2:00 PM",
-    location: "Northern Quarter",
-    description:
-      "Join us for a guided walk through Manchester's vibrant street art scene. Perfect for photography enthusiasts and art lovers!",
-    imageUrl: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81",
-    attendees: 12,
-  },
-  {
-    title: "Coffee & Code Social",
-    date: "Sunday, April 21st at 10:00 AM",
-    location: "Ancoats Coffee Co.",
-    description:
-      "Whether you're a seasoned developer or just starting out, come along for coffee and casual coding conversations!",
-    imageUrl: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
-    attendees: 8,
-  },
-  {
-    title: "Weekend Hiking Adventure",
-    date: "Saturday, April 27th at 9:00 AM",
-    location: "Peak District",
-    description:
-      "A beginner-friendly hike through some of the most beautiful trails in the Peak District. Transportation provided.",
-    imageUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05",
-    attendees: 15,
-  },
+const COMMUNITY_STATS = [
+  { icon: Calendar, label: "Events Hosted", value: "150+" },
+  { icon: Users, label: "Active Members", value: "500+" },
+  { icon: MapPin, label: "Locations", value: "25+" },
+  { icon: Heart, label: "Connections Made", value: "1000+" },
 ];
 
 const Index = () => {
@@ -38,31 +16,55 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
-        <div className="text-center max-w-3xl mx-auto animate-fade-in">
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-            Connect with South Manchester
-          </h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Join our vibrant community and discover exciting events, meet new
-            friends, and create lasting memories together.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="text-lg">
-              Join Now
-            </Button>
-            <Button size="lg" variant="outline" className="text-lg">
-              Browse Events
-            </Button>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-primary/10 backdrop-blur-sm" />
+        <div className="container mx-auto px-4 py-16 md:py-24 relative">
+          <div className="text-center max-w-3xl mx-auto animate-fade-in">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Connect with South Manchester
+            </h1>
+            <p className="text-xl text-gray-600 mb-8">
+              Join our vibrant community and discover exciting events, meet new
+              friends, and create lasting memories together in South Manchester.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="text-lg">
+                Join Our Community
+              </Button>
+              <Button size="lg" variant="outline" className="text-lg">
+                Explore Events
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {COMMUNITY_STATS.map(({ icon: Icon, label, value }) => (
+              <div key={label} className="text-center">
+                <Icon className="h-8 w-8 mx-auto mb-4 text-primary" />
+                <div className="text-2xl font-bold text-gray-900 mb-2">{value}</div>
+                <div className="text-gray-600">{label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Featured Events Section */}
       <section className="container mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          Upcoming Events
-        </h2>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            Upcoming Events
+          </h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Discover the latest events happening in South Manchester. From casual meetups
+            to organized activities, there's something for everyone.
+          </p>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {FEATURED_EVENTS.map((event) => (
             <EventCard key={event.title} {...event} />
@@ -81,15 +83,25 @@ const Index = () => {
           <h2 className="text-3xl font-bold mb-6">Join Our Community</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Whether you're new to Manchester or a longtime local, there's always
-            room for new friends and adventures.
+            room for new friends and adventures. Host your own events or join
+            existing ones - the choice is yours!
           </p>
-          <Button
-            variant="secondary"
-            size="lg"
-            className="bg-secondary hover:bg-secondary/90"
-          >
-            Get Started
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              variant="secondary"
+              size="lg"
+              className="bg-white text-primary hover:bg-white/90"
+            >
+              Get Started
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-white text-white hover:bg-white/10"
+            >
+              Learn More
+            </Button>
+          </div>
         </div>
       </section>
     </div>
