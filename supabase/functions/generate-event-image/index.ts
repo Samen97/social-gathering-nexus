@@ -13,8 +13,12 @@ serve(async (req) => {
 
   try {
     const { prompt } = await req.json()
+    
+    if (!prompt) {
+      throw new Error('No prompt provided')
+    }
 
-    const response = await fetch('https://api.openai.com/v1/images/generations', {
+    const openaiResponse = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
@@ -28,17 +32,50 @@ serve(async (req) => {
       }),
     })
 
-    const data = await response.json()
-    
-    if (data.error) {
-      throw new Error(data.error.message)
+    if (!openaiResponse.ok) {
+      const error = await openaiResponse.json()
+      console.error('OpenAI API error:', error)
+      throw new Error('Failed to generate image')
     }
 
+    const data = await openaiResponse.json()
+    const imageUrl = data.data[0].url
+
+    // Download the image
+    const imageResponse = await fetch(imageUrl)
+    const imageBlob = await imageResponse.blob()
+
+    // Upload to Supabase Storage
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    const fileExt = 'png'
+    const filePath = `${crypto.randomUUID()}.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('event-images')
+      .upload(filePath, imageBlob, {
+        contentType: 'image/png',
+        upsert: false
+      })
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError)
+      throw new Error('Failed to upload generated image')
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('event-images')
+      .getPublicUrl(filePath)
+
     return new Response(
-      JSON.stringify({ imageUrl: data.data[0].url }),
+      JSON.stringify({ imageUrl: publicUrl }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
+    console.error('Error in generate-event-image function:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

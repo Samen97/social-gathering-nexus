@@ -49,6 +49,9 @@ export const EventForm = () => {
 
     setIsSubmitting(true);
     try {
+      // Check if the user is s.a.mccaddon@gmail.com to set is_official
+      const isOfficial = session.user.email === 's.a.mccaddon@gmail.com';
+
       const { error } = await supabase.from("events").insert({
         title: data.title,
         description: data.description,
@@ -57,6 +60,8 @@ export const EventForm = () => {
         image_url: imageUrl,
         max_attendees: data.maxAttendees || null,
         created_by: session.user.id,
+        is_official: isOfficial,
+        approval_status: isOfficial ? 'approved' : 'pending',
       });
 
       if (error) throw error;
