@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin, Users, Crown } from "lucide-react";
 import { EventActions } from "@/components/EventActions";
+import { Button } from "@/components/ui/button";
 
 const EventDetail = () => {
   const { id } = useParams();
