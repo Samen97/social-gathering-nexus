@@ -34,6 +34,9 @@ const AuthPage = () => {
         <h1 className="text-2xl font-bold text-center mb-6 text-primary">
           Welcome to South Manchester Social
         </h1>
+        <p className="text-sm text-muted-foreground mb-4 text-center">
+          Please sign up or sign in to continue. Password must be at least 6 characters long.
+        </p>
         <Auth
           supabaseClient={supabase}
           appearance={{
