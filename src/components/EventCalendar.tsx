@@ -21,11 +21,12 @@ interface EventCalendarProps {
 }
 
 export const EventCalendar = ({ events, onDateSelect, selectedDate }: EventCalendarProps) => {
-  const filteredEvents = events?.filter(
-    (event) =>
-      selectedDate &&
-      format(new Date(event.date), "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd")
-  );
+  const filteredEvents = selectedDate
+    ? events?.filter(
+        (event) =>
+          format(new Date(event.date), "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd")
+      )
+    : events;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[300px,1fr] gap-8">
@@ -42,7 +43,7 @@ export const EventCalendar = ({ events, onDateSelect, selectedDate }: EventCalen
         <h2 className="text-2xl font-semibold">
           {selectedDate
             ? `Events on ${format(selectedDate, "MMMM d, yyyy")}`
-            : "Select a date to view events"}
+            : "All Events"}
         </h2>
         
         {filteredEvents && filteredEvents.length > 0 ? (
