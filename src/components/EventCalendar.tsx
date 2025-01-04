@@ -43,11 +43,11 @@ export const EventCalendar = ({ events, onDateSelect, selectedDate }: EventCalen
       </div>
       
       <div className="space-y-8">
-        <h2 className="text-2xl font-semibold">
-          {selectedDate
-            ? `Events on ${format(selectedDate, "MMMM d, yyyy")}`
-            : "All Events"}
-        </h2>
+        {selectedDate && (
+          <p className="text-gray-600">
+            Showing events for {format(selectedDate, "MMMM d, yyyy")}
+          </p>
+        )}
         
         {/* Official Events Section */}
         <div>
