@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Calendar, MapPin, Users, Crown } from "lucide-react";
 import { EventActions } from "@/components/EventActions";
 import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/Navbar";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -92,23 +93,29 @@ const EventDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-64 bg-gray-200 rounded-lg mb-6" />
-          <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
-          <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
-          <div className="h-4 bg-gray-200 rounded w-1/3" />
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="h-64 bg-gray-200 rounded-lg mb-6" />
+            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2 mb-2" />
+            <div className="h-4 bg-gray-200 rounded w-1/3" />
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!event) {
     return (
-      <div className="container mx-auto px-4 py-8 text-center">
-        <h1 className="text-2xl font-bold mb-4">Event not found</h1>
-        <Button onClick={() => navigate("/events")}>Back to Events</Button>
-      </div>
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-8 text-center">
+          <h1 className="text-2xl font-bold mb-4">Event not found</h1>
+          <Button onClick={() => navigate("/events")}>Back to Events</Button>
+        </div>
+      </>
     );
   }
 
@@ -130,64 +137,67 @@ const EventDetail = () => {
   const isHost = session?.user?.id === event.created_by;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto">
-        <div
-          className="h-96 bg-cover bg-center rounded-lg mb-8"
-          style={{ backgroundImage: `url(${event.image_url})` }}
-        />
-
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-4xl font-bold">{event.title}</h1>
-            {event.is_official && (
-              <Crown className="h-6 w-6 text-primary" />
-            )}
-          </div>
-
-          <div className="flex flex-col gap-4 text-gray-600">
-            <div className="flex items-center">
-              <Calendar className="h-5 w-5 mr-2" />
-              <span>
-                {new Date(event.date).toLocaleDateString("en-US", {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                  hour: "numeric",
-                  minute: "numeric",
-                })}
-              </span>
-            </div>
-
-            <div className="flex items-center">
-              <MapPin className="h-5 w-5 mr-2" />
-              <span>{event.location}</span>
-            </div>
-
-            <div className="flex items-center">
-              <Users className="h-5 w-5 mr-2" />
-              <span>
-                {attendeeCount} attending
-                {event.max_attendees && ` (max ${event.max_attendees})`}
-              </span>
-            </div>
-          </div>
-
-          <p className="text-gray-700 whitespace-pre-wrap">
-            {event.description}
-          </p>
-
-          <EventActions
-            eventId={event.id}
-            isHost={isHost}
-            isAttending={!!userAttendance}
-            isAtCapacity={isAtCapacity}
-            onAttendanceChange={handleAttendance}
+    <>
+      <Navbar />
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div
+            className="h-96 bg-cover bg-center rounded-lg mb-8"
+            style={{ backgroundImage: `url(${event.image_url})` }}
           />
+
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h1 className="text-4xl font-bold">{event.title}</h1>
+              {event.is_official && (
+                <Crown className="h-6 w-6 text-primary" />
+              )}
+            </div>
+
+            <div className="flex flex-col gap-4 text-gray-600">
+              <div className="flex items-center">
+                <Calendar className="h-5 w-5 mr-2" />
+                <span>
+                  {new Date(event.date).toLocaleDateString("en-US", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                  })}
+                </span>
+              </div>
+
+              <div className="flex items-center">
+                <MapPin className="h-5 w-5 mr-2" />
+                <span>{event.location}</span>
+              </div>
+
+              <div className="flex items-center">
+                <Users className="h-5 w-5 mr-2" />
+                <span>
+                  {attendeeCount} attending
+                  {event.max_attendees && ` (max ${event.max_attendees})`}
+                </span>
+              </div>
+            </div>
+
+            <p className="text-gray-700 whitespace-pre-wrap">
+              {event.description}
+            </p>
+
+            <EventActions
+              eventId={event.id}
+              isHost={isHost}
+              isAttending={!!userAttendance}
+              isAtCapacity={isAtCapacity}
+              onAttendanceChange={handleAttendance}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
