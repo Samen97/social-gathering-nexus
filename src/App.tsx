@@ -13,6 +13,7 @@ import EventDetail from "@/pages/EventDetail";
 import Auth from "@/pages/Auth";
 import About from "@/pages/About";
 import Notices from "@/pages/Notices";
+import CreateNotice from "@/pages/CreateNotice";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="/events/create" element={<CreateEvent />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/notices" element={<Notices />} />
+              <Route path="/notices/create" element={<CreateNotice />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/about" element={<About />} />
             </Routes>
