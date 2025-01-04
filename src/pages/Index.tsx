@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/EventCard";
 import { Navbar } from "@/components/Navbar";
 import { Calendar, Users, MapPin, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const COMMUNITY_STATS = [
   { icon: Calendar, label: "Events Hosted", value: "150+" },
@@ -39,6 +40,8 @@ const FEATURED_EVENTS = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
       <Navbar />
@@ -59,7 +62,12 @@ const Index = () => {
               <Button size="lg" className="text-lg">
                 Join Our Community
               </Button>
-              <Button size="lg" variant="outline" className="text-lg">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="text-lg"
+                onClick={() => navigate("/events")}
+              >
                 Explore Events
               </Button>
             </div>
@@ -99,7 +107,11 @@ const Index = () => {
           ))}
         </div>
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg">
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={() => navigate("/events")}
+          >
             View All Events
           </Button>
         </div>
@@ -119,6 +131,7 @@ const Index = () => {
               variant="secondary"
               size="lg"
               className="bg-white text-primary hover:bg-white/90"
+              onClick={() => navigate("/auth")}
             >
               Get Started
             </Button>
@@ -126,6 +139,7 @@ const Index = () => {
               variant="outline"
               size="lg"
               className="border-white text-white hover:bg-white/10"
+              onClick={() => navigate("/about")}
             >
               Learn More
             </Button>
