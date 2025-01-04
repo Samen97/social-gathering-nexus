@@ -11,6 +11,7 @@ interface Notice {
   description: string;
   date: string;
   created_by: string;
+  created_at: string;
   profiles: {
     full_name: string | null;
   };
@@ -65,7 +66,7 @@ export const NoticeBoard = () => {
             <div className="flex justify-between text-sm text-gray-500">
               <span>Posted by {notice.profiles.full_name || "Anonymous"}</span>
               <span>
-                {new Date(notice.date).toLocaleDateString("en-US", {
+                {new Date(notice.created_at).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

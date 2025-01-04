@@ -32,6 +32,9 @@ export const Navbar = () => {
             <Link to="/events" className="text-gray-600 hover:text-primary">
               Events
             </Link>
+            <Link to="/notices" className="text-gray-600 hover:text-primary">
+              Notices
+            </Link>
             <Link to="/about" className="text-gray-600 hover:text-primary">
               About
             </Link>
@@ -66,6 +69,13 @@ export const Navbar = () => {
                 onClick={() => setIsOpen(false)}
               >
                 Events
+              </Link>
+              <Link
+                to="/notices"
+                className="text-gray-600 hover:text-primary px-2 py-1"
+                onClick={() => setIsOpen(false)}
+              >
+                Notices
               </Link>
               <Link
                 to="/about"
