@@ -3,8 +3,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Users, Crown } from "lucide-react";
+import { EventActions } from "@/components/EventActions";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -126,6 +126,7 @@ const EventDetail = () => {
   const attendeeCount = event.event_attendees?.length || 0;
   const isAtCapacity =
     event.max_attendees !== null && attendeeCount >= event.max_attendees;
+  const isHost = session?.user?.id === event.created_by;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -176,28 +177,13 @@ const EventDetail = () => {
             {event.description}
           </p>
 
-          <div className="flex justify-between items-center">
-            <Button
-              onClick={handleAttendance}
-              disabled={
-                isAtCapacity && !userAttendance
-              }
-              variant={userAttendance ? "outline" : "default"}
-            >
-              {userAttendance
-                ? "Cancel Attendance"
-                : isAtCapacity
-                ? "Event Full"
-                : "Attend Event"}
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={() => navigate("/events")}
-            >
-              Back to Events
-            </Button>
-          </div>
+          <EventActions
+            eventId={event.id}
+            isHost={isHost}
+            isAttending={!!userAttendance}
+            isAtCapacity={isAtCapacity}
+            onAttendanceChange={handleAttendance}
+          />
         </div>
       </div>
     </div>
