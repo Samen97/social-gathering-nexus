@@ -94,48 +94,6 @@ export type Database = {
           },
         ]
       }
-      notice_comments: {
-        Row: {
-          content: string
-          created_at: string
-          created_by: string
-          id: string
-          notice_id: string
-          updated_at: string
-        }
-        Insert: {
-          content: string
-          created_at?: string
-          created_by: string
-          id?: string
-          notice_id: string
-          updated_at?: string
-        }
-        Update: {
-          content?: string
-          created_at?: string
-          created_by?: string
-          id?: string
-          notice_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "notice_comments_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "notice_comments_notice_id_fkey"
-            columns: ["notice_id"]
-            isOneToOne: false
-            referencedRelation: "notices"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       notices: {
         Row: {
           created_at: string

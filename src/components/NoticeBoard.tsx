@@ -4,9 +4,6 @@ import { Button } from "./ui/button";
 import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "@supabase/auth-helpers-react";
-import { useState } from "react";
-import { Input } from "./ui/input";
-import { useToast } from "./ui/use-toast";
 
 interface Notice {
   id: string;
@@ -18,25 +15,13 @@ interface Notice {
   profiles: {
     full_name: string | null;
   };
-  comments: Comment[];
-}
-
-interface Comment {
-  id: string;
-  content: string;
-  created_at: string;
-  profiles: {
-    full_name: string | null;
-  };
 }
 
 export const NoticeBoard = () => {
   const session = useSession();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [newComments, setNewComments] = useState<{ [key: string]: string }>({});
 
-  const { data: notices, isLoading, refetch } = useQuery({
+  const { data: notices, isLoading } = useQuery({
     queryKey: ["notices"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -45,14 +30,6 @@ export const NoticeBoard = () => {
           *,
           profiles (
             full_name
-          ),
-          comments: notice_comments (
-            id,
-            content,
-            created_at,
-            profiles (
-              full_name
-            )
           )
         `)
         .order("created_at", { ascending: false });
@@ -61,45 +38,6 @@ export const NoticeBoard = () => {
       return data as Notice[];
     },
   });
-
-  const handleAddComment = async (noticeId: string) => {
-    if (!session) {
-      toast({
-        title: "Please sign in",
-        description: "You need to be signed in to comment",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const comment = newComments[noticeId];
-    if (!comment?.trim()) {
-      toast({
-        title: "Empty comment",
-        description: "Please enter a comment",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const { error } = await supabase.from("notice_comments").insert({
-      notice_id: noticeId,
-      content: comment,
-      created_by: session.user.id,
-    });
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to add comment",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setNewComments((prev) => ({ ...prev, [noticeId]: "" }));
-    refetch();
-  };
 
   if (isLoading) {
     return <div className="animate-pulse bg-white rounded-lg h-48" />;
@@ -117,15 +55,15 @@ export const NoticeBoard = () => {
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {notices?.map((notice) => (
           <div
             key={notice.id}
-            className="border-b border-gray-200 last:border-0 pb-6 last:pb-0"
+            className="border-b border-gray-200 last:border-0 pb-4 last:pb-0"
           >
             <h3 className="font-semibold text-lg mb-2">{notice.title}</h3>
             <p className="text-gray-600 mb-2">{notice.description}</p>
-            <div className="flex justify-between text-sm text-gray-500 mb-4">
+            <div className="flex justify-between text-sm text-gray-500">
               <span>Posted by {notice.profiles.full_name || "Anonymous"}</span>
               <span>
                 {new Date(notice.created_at).toLocaleDateString("en-US", {
@@ -134,49 +72,6 @@ export const NoticeBoard = () => {
                   day: "numeric",
                 })}
               </span>
-            </div>
-
-            {/* Comments Section */}
-            <div className="mt-4 space-y-4">
-              <h4 className="font-medium text-sm text-gray-700">Comments</h4>
-              <div className="space-y-3">
-                {notice.comments?.map((comment) => (
-                  <div key={comment.id} className="bg-gray-50 p-3 rounded-md">
-                    <p className="text-sm text-gray-600">{comment.content}</p>
-                    <div className="flex justify-between mt-2">
-                      <span className="text-xs text-gray-500">
-                        {comment.profiles.full_name || "Anonymous"}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(comment.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Add Comment Form */}
-              {session && (
-                <div className="flex gap-2 mt-3">
-                  <Input
-                    placeholder="Add a comment..."
-                    value={newComments[notice.id] || ""}
-                    onChange={(e) =>
-                      setNewComments((prev) => ({
-                        ...prev,
-                        [notice.id]: e.target.value,
-                      }))
-                    }
-                    className="flex-1"
-                  />
-                  <Button
-                    size="sm"
-                    onClick={() => handleAddComment(notice.id)}
-                  >
-                    Comment
-                  </Button>
-                </div>
-              )}
             </div>
           </div>
         ))}
