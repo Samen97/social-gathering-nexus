@@ -11,6 +11,7 @@ import Events from "@/pages/Events";
 import CreateEvent from "@/pages/CreateEvent";
 import EventDetail from "@/pages/EventDetail";
 import Auth from "@/pages/Auth";
+import About from "@/pages/About";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function App() {
               <Route path="/events/create" element={<CreateEvent />} />
               <Route path="/events/:id" element={<EventDetail />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/about" element={<About />} />
             </Routes>
           </BrowserRouter>
           <Toaster />
