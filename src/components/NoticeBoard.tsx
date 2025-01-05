@@ -23,6 +23,7 @@ export const NoticeBoard = () => {
   const { data: notices, isLoading } = useQuery({
     queryKey: ["notices"],
     queryFn: async () => {
+      console.log("Fetching notices..."); // Debug log
       const { data: notices, error } = await supabase
         .from("notices")
         .select(`
@@ -34,14 +35,16 @@ export const NoticeBoard = () => {
             full_name
           )
         `)
-        .eq('status', 'active') // Only show active notices
-        .order("is_pinned", { ascending: false })
-        .order("created_at", { ascending: false });
+        .eq('status', 'active')
+        .order('is_pinned', { ascending: false })
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error("Error fetching notices:", error);
         throw error;
       }
+      
+      console.log("Fetched notices:", notices); // Debug log
       return notices as Notice[];
     },
   });
@@ -52,6 +55,9 @@ export const NoticeBoard = () => {
 
   const pinnedNotices = notices?.filter((notice) => notice.is_pinned) || [];
   const regularNotices = notices?.filter((notice) => !notice.is_pinned) || [];
+
+  console.log("Pinned notices:", pinnedNotices); // Debug log
+  console.log("Regular notices:", regularNotices); // Debug log
 
   const NoticeCard = ({ notice }: { notice: Notice }) => (
     <Card
