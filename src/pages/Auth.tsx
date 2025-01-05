@@ -20,8 +20,8 @@ const Auth = () => {
     }
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_IN' && session) {
         toast({
@@ -29,14 +29,39 @@ const Auth = () => {
           duration: 2000,
         });
         navigate('/');
-      }
-      if (event === 'SIGNED_OUT') {
+      } else if (event === 'SIGNED_OUT') {
         toast({
           title: "Signed out",
           duration: 2000,
         });
+      } else if (event === 'USER_UPDATED') {
+        console.log("User updated:", session);
+      } else if (event === 'USER_DELETED') {
+        console.log("User deleted");
+      } else if (event === 'PASSWORD_RECOVERY') {
+        console.log("Password recovery requested");
       }
     });
+
+    // Test auth configuration
+    const testAuth = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        console.log("Auth configuration test:", { data, error });
+        if (error) {
+          toast({
+            title: "Authentication Error",
+            description: error.message,
+            variant: "destructive",
+            duration: 5000,
+          });
+        }
+      } catch (err) {
+        console.error("Auth test error:", err);
+      }
+    };
+
+    testAuth();
 
     return () => {
       subscription.unsubscribe();
@@ -65,6 +90,15 @@ const Auth = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            onError={(error) => {
+              console.error("Auth error:", error);
+              toast({
+                title: "Authentication Error",
+                description: error.message,
+                variant: "destructive",
+                duration: 5000,
+              });
+            }}
           />
         </div>
       </div>
