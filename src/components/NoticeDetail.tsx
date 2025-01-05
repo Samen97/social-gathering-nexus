@@ -15,7 +15,8 @@ interface Comment {
   content: string;
   created_at: string;
   created_by: string;
-  parent_id: string | null;
+  notice_id: string;
+  updated_at: string;
   profiles: {
     full_name: string | null;
   };
@@ -205,7 +206,13 @@ export const NoticeDetail = () => {
           />
 
           <NoticeComments
-            comments={notice.notice_comments}
+            comments={notice.notice_comments.map(comment => ({
+              id: comment.id,
+              content: comment.content,
+              created_at: comment.created_at,
+              created_by: comment.created_by,
+              authorName: comment.profiles?.full_name || "Anonymous",
+            }))}
             onAddComment={(content) => addCommentMutation.mutate(content)}
             onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
             isAddingComment={addCommentMutation.isPending}
