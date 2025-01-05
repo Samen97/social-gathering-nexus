@@ -20,8 +20,15 @@ const Auth = () => {
       return;
     }
 
+    // Check for existing session
+    if (session) {
+      console.log("Existing session found, redirecting to home");
+      navigate('/');
+      return;
+    }
+
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_IN' && session) {
@@ -29,14 +36,19 @@ const Auth = () => {
           title: "Successfully signed in",
           duration: 2000,
         });
-        navigate('/', { replace: true });
+        navigate('/');
+      } else if (event === 'SIGNED_OUT') {
+        toast({
+          title: "Signed out",
+          duration: 2000,
+        });
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, toast, searchParams]);
+  }, [session, navigate, toast, searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white py-12">
@@ -51,42 +63,17 @@ const Auth = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: '#6D28D9',
-                    brandAccent: '#5B21B6',
+                    brand: 'rgb(var(--primary))',
+                    brandAccent: 'rgb(var(--primary))',
                   },
                 },
               },
-              className: {
-                container: 'auth-container',
-                label: 'text-sm font-medium text-gray-700',
-                button: 'w-full bg-primary text-white rounded-md py-2 hover:bg-primary/90',
-                input: 'mt-1 block w-full rounded-md border-gray-300 shadow-sm',
-                message: 'text-sm text-red-600',
-              },
             }}
             supabaseClient={supabase}
-            providers={[]}
-            redirectTo={`${window.location.origin}/auth/callback`}
-            magicLink={false}
+            view="sign_in"
             showLinks={true}
-            view="sign_up"
-            localization={{
-              variables: {
-                sign_up: {
-                  button_label: "Sign up",
-                  email_label: "Email",
-                  password_label: "Password",
-                  email_input_placeholder: "Your email address",
-                  password_input_placeholder: "Your password"
-                }
-              }
-            }}
-            options={{
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
-              data: {
-                full_name: ''
-              }
-            }}
+            redirectTo={`${window.location.origin}/auth/callback`}
+            providers={[]}
           />
         </div>
       </div>

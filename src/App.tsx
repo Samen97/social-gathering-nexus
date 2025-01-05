@@ -19,15 +19,6 @@ function App() {
       <Navbar />
       <Routes>
         <Route 
-          path="/auth" 
-          element={session ? <Navigate to="/" replace /> : <Auth />} 
-        />
-        <Route 
-          path="/auth/callback" 
-          element={<Navigate to="/" replace />} 
-        />
-        <Route path="/password-reset" element={<PasswordReset />} />
-        <Route 
           path="/" 
           element={session ? <Index /> : <Navigate to="/auth" replace />} 
         />
@@ -51,6 +42,8 @@ function App() {
           path="/notices/*" 
           element={session ? <Notices /> : <Navigate to="/auth" replace />} 
         />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
           path="/admin" 
           element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} 
