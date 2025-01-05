@@ -4,17 +4,43 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Auth = () => {
   const session = useSession();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // If user is already logged in, redirect to home
     if (session) {
       navigate("/");
     }
-  }, [session, navigate]);
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        navigate("/");
+      }
+      if (event === 'SIGNED_OUT') {
+        navigate("/auth");
+      }
+      if (event === 'USER_UPDATED') {
+        navigate("/");
+      }
+      if (event === 'PASSWORD_RECOVERY') {
+        toast({
+          title: "Password Recovery",
+          description: "Please check your email for password reset instructions.",
+        });
+      }
+    });
+
+    // Cleanup subscription on unmount
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [session, navigate, toast]);
 
   return (
     <div className="min-h-screen bg-accent/50 flex items-center justify-center p-4">
@@ -33,10 +59,30 @@ const Auth = () => {
                   brandAccent: '#5b21b6',
                 }
               }
-            }
+            },
+            style: {
+              button: {
+                borderRadius: '0.375rem',
+                height: '40px',
+              },
+              input: {
+                borderRadius: '0.375rem',
+              },
+              message: {
+                borderRadius: '0.375rem',
+                padding: '10px',
+              },
+            },
           }}
           providers={[]}
           redirectTo={window.location.origin}
+          onError={(error) => {
+            toast({
+              variant: "destructive",
+              title: "Authentication Error",
+              description: error.message,
+            });
+          }}
         />
       </div>
     </div>
