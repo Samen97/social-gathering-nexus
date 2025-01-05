@@ -16,7 +16,6 @@ const Events = () => {
   const session = useSession();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>();
-  const [localEvents, setLocalEvents] = useState<any[]>([]);
 
   const { data: isAdmin } = useQuery({
     queryKey: ["isAdmin"],
@@ -31,7 +30,7 @@ const Events = () => {
     enabled: !!session?.user,
   });
 
-  const { data: events, isLoading } = useQuery({
+  const { data: events = [], isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
       console.log("Fetching events...");
@@ -45,30 +44,26 @@ const Events = () => {
           ),
           profiles(full_name)
         `)
-        .order("date", { ascending: true });
+        .order('date', { ascending: true });
 
       if (error) {
         console.error("Error fetching events:", error);
         throw error;
       }
       console.log("Fetched events:", data);
-      return data;
-    },
-    meta: {
-      onSuccess: (data: any) => {
-        console.log("Setting local events:", data);
-        setLocalEvents(data || []);
-      }
+      return data || [];
     }
   });
 
   const handleEventDelete = (eventId: string) => {
-    setLocalEvents((prev) => prev.filter((event) => event.id !== eventId));
+    // Filter out the deleted event from the local state
+    const updatedEvents = events.filter((event) => event.id !== eventId);
+    // No need to setLocalEvents since we're using the events directly from useQuery
   };
 
-  const officialEvents = localEvents?.filter((event) => event.is_official);
-  const communityEvents = localEvents?.filter((event) => !event.is_official && event.approval_status === 'approved');
-  const pendingEvents = localEvents?.filter((event) => !event.is_official && event.approval_status === 'pending');
+  const officialEvents = events?.filter((event) => event.is_official);
+  const communityEvents = events?.filter((event) => !event.is_official && event.approval_status === 'approved');
+  const pendingEvents = events?.filter((event) => !event.is_official && event.approval_status === 'pending');
 
   if (isLoading) {
     return (
@@ -99,7 +94,7 @@ const Events = () => {
 
         <div className="space-y-8">
           <EventCalendar
-            events={localEvents || []}
+            events={events}
             onDateSelect={setSelectedDate}
             selectedDate={selectedDate}
           />
