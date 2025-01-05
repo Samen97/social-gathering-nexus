@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import { Send } from "lucide-react";
+import { Send, Trash2 } from "lucide-react";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ interface Comment {
   id: string;
   content: string;
   created_at: string;
+  created_by: string;
   profiles: {
     full_name: string | null;
   };
@@ -56,9 +57,20 @@ export const NoticeComments = ({
               <span className="text-sm font-medium">
                 {comment.profiles.full_name || "Anonymous"}
               </span>
-              <span className="text-xs text-gray-500">
-                {new Date(comment.created_at).toLocaleDateString()}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500">
+                  {new Date(comment.created_at).toLocaleDateString()}
+                </span>
+                {session?.user?.id === comment.created_by && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 text-red-500 hover:text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
             <p className="text-gray-600">{comment.content}</p>
           </div>
