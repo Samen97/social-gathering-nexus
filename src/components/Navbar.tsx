@@ -30,10 +30,35 @@ export const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
+      // First check if we have a session
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      
+      // If no session exists, just redirect to auth page
+      if (!currentSession) {
+        navigate("/auth");
+        toast({
+          title: "Session expired",
+          description: "Please sign in again",
+          duration: 2000,
+        });
+        return;
+      }
+
+      // Attempt to sign out
       const { error } = await supabase.auth.signOut();
       
       if (error) {
         console.error("Sign out error:", error);
+        // If we get a 403 or session_not_found error, consider the user signed out
+        if (error.status === 403 || error.message.includes("session_not_found")) {
+          navigate("/auth");
+          toast({
+            title: "Signed out",
+            duration: 2000,
+          });
+          return;
+        }
+        
         toast({
           title: "Error signing out",
           description: "Please try again",
@@ -50,10 +75,11 @@ export const Navbar = () => {
       navigate("/auth");
     } catch (error) {
       console.error("Sign out error:", error);
+      // For any other errors, redirect to auth page as a fallback
+      navigate("/auth");
       toast({
-        title: "Error signing out",
-        description: "Please try again",
-        variant: "destructive",
+        title: "Session ended",
+        description: "You have been signed out",
         duration: 2000,
       });
     }
