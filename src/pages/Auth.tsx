@@ -12,9 +12,17 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check for existing session first
+    if (session) {
+      console.log("Existing session found, redirecting to home");
+      navigate('/');
+      return;
+    }
+
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
+      console.log("Auth state changed:", event);
+      
       if (event === 'SIGNED_IN' && session) {
         toast({
           title: "Successfully signed in",
@@ -30,13 +38,6 @@ const Auth = () => {
       }
     });
 
-    // Check for existing session
-    if (session) {
-      console.log("Existing session found:", session);
-      navigate('/');
-    }
-
-    // Cleanup subscription
     return () => {
       subscription.unsubscribe();
     };
