@@ -70,10 +70,8 @@ const Auth = () => {
               },
             }}
             supabaseClient={supabase}
-            view="sign_in"
-            showLinks={true}
-            redirectTo={`${window.location.origin}/auth/callback`}
             providers={[]}
+            redirectTo={`${window.location.origin}/auth/callback`}
             localization={{
               variables: {
                 sign_up: {
@@ -83,15 +81,16 @@ const Auth = () => {
                   password_input_placeholder: 'Your password',
                   button_label: 'Sign up',
                   loading_button_label: 'Signing up...',
-                }
+                },
               }
             }}
-            additionalData={{
-              full_name: {
-                required: true,
-                label: 'Full Name',
-              }
+            options={{
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              data: {
+                full_name: '',
+              },
             }}
+            view="sign_up"
           />
         </div>
       </div>
