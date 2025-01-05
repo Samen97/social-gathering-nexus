@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useSession } from "@supabase/auth-helpers-react";
@@ -98,7 +97,6 @@ const Events = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
-      <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Events</h1>
