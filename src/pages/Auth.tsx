@@ -4,21 +4,35 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
   const session = useSession();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (event === 'SIGNED_IN' && session) {
+        toast({
+          title: "Successfully signed in",
+          duration: 2000,
+        });
         navigate('/');
+      }
+      if (event === 'SIGNED_OUT') {
+        toast({
+          title: "Signed out",
+          duration: 2000,
+        });
       }
     });
 
     // Check for existing session
     if (session) {
+      console.log("Existing session found:", session);
       navigate('/');
     }
 
@@ -26,7 +40,7 @@ const Auth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [session, navigate]);
+  }, [session, navigate, toast]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white py-12">
