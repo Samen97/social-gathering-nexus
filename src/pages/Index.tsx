@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/EventCard";
 import { Navbar } from "@/components/Navbar";
-import { Calendar, Users, MapPin, Heart } from "lucide-react";
+import { Calendar, Users, MapPin, Heart, CalendarClock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 const COMMUNITY_STATS = [
   { icon: Calendar, label: "Events Hosted", value: "150+" },
   { icon: Users, label: "Active Members", value: "900+" },
-  { icon: MapPin, label: "Community Groups", value: "10+" },
+  { icon: CalendarClock, label: "Types of Events", value: "100+" },
   { icon: Heart, label: "Connections Made", value: "1000+" },
 ];
 
