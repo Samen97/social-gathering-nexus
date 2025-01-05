@@ -59,10 +59,6 @@ const Auth = () => {
           </h1>
           <SupabaseAuth
             supabaseClient={supabase}
-            view="sign_in"
-            showLinks={true}
-            redirectTo={`${window.location.origin}/auth/callback`}
-            providers={[]}
             appearance={{
               theme: ThemeSupa,
               variables: {
@@ -82,9 +78,6 @@ const Auth = () => {
               },
             }}
             redirectTo={`${window.location.origin}/auth/callback`}
-            data={{
-              full_name: '',
-            }}
           />
         </div>
       </div>

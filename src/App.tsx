@@ -23,6 +23,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/notices" element={<Notices />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/password-reset" element={<PasswordReset />} />
 
@@ -32,8 +33,8 @@ function App() {
           element={session ? <CreateEvent /> : <Navigate to="/auth" replace />} 
         />
         <Route 
-          path="/notices/*" 
-          element={session ? <Notices /> : <Navigate to="/auth" replace />} 
+          path="/notices/create" 
+          element={session ? <CreateEvent /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/admin" 
