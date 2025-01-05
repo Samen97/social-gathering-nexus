@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Share2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useSession } from "@supabase/auth-helpers-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +44,25 @@ export const Navbar = () => {
             <Link to="/about" className="text-gray-600 hover:text-primary">
               About
             </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Share2 className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem asChild>
+                  <a
+                    href="https://linktr.ee/SouthManchesterSocialStuff"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cursor-pointer"
+                  >
+                    Linktree
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {session ? (
               <Button variant="default" onClick={handleSignOut}>
                 Sign Out
@@ -84,6 +109,15 @@ export const Navbar = () => {
               >
                 About
               </Link>
+              <a
+                href="https://linktr.ee/SouthManchesterSocialStuff"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-600 hover:text-primary px-2 py-1"
+                onClick={() => setIsOpen(false)}
+              >
+                Linktree
+              </a>
               {session ? (
                 <Button variant="default" onClick={handleSignOut} className="w-full">
                   Sign Out
