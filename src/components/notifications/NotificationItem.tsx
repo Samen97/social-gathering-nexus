@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, Calendar, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 interface NotificationItemProps {
   id: string;
@@ -33,8 +34,11 @@ export const NotificationItem = ({
       } else if (type.includes('notice')) {
         navigate(`/notices/${reference_id}`);
       }
+      if (onClose) {
+        onClose();
+        toast.success("Notification marked as read");
+      }
     }
-    if (onClose) onClose();
   };
 
   const Icon = type.includes('event') ? Calendar : 

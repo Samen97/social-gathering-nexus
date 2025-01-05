@@ -10,6 +10,7 @@ import { Bell } from "lucide-react";
 import { NotificationItem } from "./NotificationItem";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "@supabase/auth-helpers-react";
+import { toast } from "sonner";
 
 export const NotificationsPopover = () => {
   const session = useSession();
@@ -18,16 +19,22 @@ export const NotificationsPopover = () => {
   const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      console.log("Fetching notifications for user:", session?.user?.id);
+      if (!session?.user?.id) {
+        console.log("No user session found");
+        return [];
+      }
+
+      console.log("Fetching notifications for user:", session.user.id);
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
-        .eq('user_id', session?.user?.id)
+        .eq('user_id', session.user.id)
         .order("created_at", { ascending: false })
         .limit(10);
 
       if (error) {
         console.error("Error fetching notifications:", error);
+        toast.error("Failed to fetch notifications");
         throw error;
       }
       
@@ -45,7 +52,11 @@ export const NotificationsPopover = () => {
         .update({ is_read: true })
         .eq("id", notificationId);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error marking notification as read:", error);
+        toast.error("Failed to mark notification as read");
+        throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
