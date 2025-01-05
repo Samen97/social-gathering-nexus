@@ -30,11 +30,6 @@ const Auth = () => {
           duration: 2000,
         });
         navigate('/');
-      } else if (event === 'SIGNED_OUT') {
-        toast({
-          title: "Signed out",
-          duration: 2000,
-        });
       }
     });
 
@@ -56,17 +51,23 @@ const Auth = () => {
               variables: {
                 default: {
                   colors: {
-                    brand: 'rgb(var(--primary))',
-                    brandAccent: 'rgb(var(--primary))',
+                    brand: '#6D28D9',
+                    brandAccent: '#5B21B6',
                   },
                 },
+              },
+              className: {
+                container: 'auth-container',
+                label: 'text-sm font-medium text-gray-700',
+                button: 'w-full bg-primary text-white rounded-md py-2 hover:bg-primary/90',
+                input: 'mt-1 block w-full rounded-md border-gray-300 shadow-sm',
               },
             }}
             supabaseClient={supabase}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
             magicLink={false}
-            view="sign_up"
+            showLinks={true}
             additionalData={{
               full_name: {
                 required: true,

@@ -18,35 +18,35 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/auth" element={session ? <Navigate to="/" /> : <Auth />} />
+        <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
         <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
           path="/" 
-          element={session ? <Index /> : <Navigate to="/auth" />} 
+          element={session ? <Index /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/about" 
-          element={session ? <About /> : <Navigate to="/auth" />} 
+          element={session ? <About /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/events" 
-          element={session ? <Events /> : <Navigate to="/auth" />} 
+          element={session ? <Events /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/events/:id" 
-          element={session ? <EventDetail /> : <Navigate to="/auth" />} 
+          element={session ? <EventDetail /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/events/create" 
-          element={session ? <CreateEvent /> : <Navigate to="/auth" />} 
+          element={session ? <CreateEvent /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/notices/*" 
-          element={session ? <Notices /> : <Navigate to="/auth" />} 
+          element={session ? <Notices /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/admin" 
-          element={session ? <AdminDashboard /> : <Navigate to="/auth" />} 
+          element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} 
         />
       </Routes>
     </Router>
