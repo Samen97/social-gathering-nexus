@@ -58,14 +58,22 @@ export const NotificationsPopover = () => {
         throw error;
       }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    onSuccess: (_, notificationId) => {
+      // Update the cache immediately
+      queryClient.setQueryData(["notifications"], (oldData: any) => {
+        if (!oldData) return [];
+        return oldData.map((notification: any) => 
+          notification.id === notificationId 
+            ? { ...notification, is_read: true }
+            : notification
+        );
+      });
     },
   });
 
   const handleNotificationClick = async (notificationId: string) => {
     try {
-      await markAsReadMutation.mutate(notificationId);
+      await markAsReadMutation.mutateAsync(notificationId);
     } catch (error) {
       console.error("Error marking notification as read:", error);
     }
