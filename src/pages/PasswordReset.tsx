@@ -39,8 +39,8 @@ const PasswordReset = () => {
       }
 
       // Update the user's password using the token
-      const { error } = await supabase.auth.resetPassword(newPassword, {
-        token,
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword
       });
 
       if (error) throw error;
