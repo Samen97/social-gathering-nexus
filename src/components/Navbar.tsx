@@ -4,6 +4,8 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export const Navbar = () => {
   const location = useLocation();
@@ -43,6 +45,45 @@ export const Navbar = () => {
     }
   };
 
+  const NavLinks = () => (
+    <>
+      <Link to="/events">
+        <Button
+          variant={isActive("/events") ? "default" : "ghost"}
+          className="w-full justify-start"
+        >
+          Events
+        </Button>
+      </Link>
+      <Link to="/notices">
+        <Button
+          variant={isActive("/notices") ? "default" : "ghost"}
+          className="w-full justify-start"
+        >
+          Notices
+        </Button>
+      </Link>
+      <Link to="/about">
+        <Button
+          variant={isActive("/about") ? "default" : "ghost"}
+          className="w-full justify-start"
+        >
+          About
+        </Button>
+      </Link>
+      {isAdmin && (
+        <Link to="/admin">
+          <Button
+            variant={isActive("/admin") ? "default" : "ghost"}
+            className="w-full justify-start"
+          >
+            Admin
+          </Button>
+        </Link>
+      )}
+    </>
+  );
+
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -52,46 +93,31 @@ export const Navbar = () => {
               SMSS
             </Link>
             <div className="hidden md:flex items-center space-x-4">
-              <Link to="/events">
-                <Button
-                  variant={isActive("/events") ? "default" : "ghost"}
-                >
-                  Events
-                </Button>
-              </Link>
-              <Link to="/notices">
-                <Button
-                  variant={isActive("/notices") ? "default" : "ghost"}
-                >
-                  Notices
-                </Button>
-              </Link>
-              <Link to="/about">
-                <Button
-                  variant={isActive("/about") ? "default" : "ghost"}
-                >
-                  About
-                </Button>
-              </Link>
-              {isAdmin && (
-                <Link to="/admin">
-                  <Button
-                    variant={isActive("/admin") ? "default" : "ghost"}
-                  >
-                    Admin
-                  </Button>
-                </Link>
-              )}
+              <NavLinks />
             </div>
           </div>
           <div className="flex items-center space-x-4">
             {session ? (
-              <Button
-                variant="ghost"
-                onClick={handleSignOut}
-              >
-                Sign Out
-              </Button>
+              <>
+                <Sheet>
+                  <SheetTrigger asChild className="md:hidden">
+                    <Button variant="ghost" size="icon">
+                      <Menu className="h-5 w-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[240px] sm:w-[240px]">
+                    <div className="flex flex-col gap-4 py-4">
+                      <NavLinks />
+                    </div>
+                  </SheetContent>
+                </Sheet>
+                <Button
+                  variant="ghost"
+                  onClick={handleSignOut}
+                >
+                  Sign Out
+                </Button>
+              </>
             ) : (
               <Link to="/auth">
                 <Button variant="default">Sign In</Button>
