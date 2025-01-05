@@ -7,6 +7,7 @@ import { Calendar, MapPin, Users, Crown } from "lucide-react";
 import { EventActions } from "@/components/EventActions";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
+import { EventImageUpload } from "@/components/EventImageUpload";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -50,6 +51,10 @@ const EventDetail = () => {
     },
     enabled: !!session?.user,
   });
+
+  const handleImageUploaded = (newImageUrl: string) => {
+    queryClient.invalidateQueries({ queryKey: ["event", id] });
+  };
 
   const attendMutation = useMutation({
     mutationFn: async () => {
@@ -141,17 +146,25 @@ const EventDetail = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <div
-            className="h-96 bg-cover bg-center rounded-lg mb-8"
-            style={{ backgroundImage: `url(${event.image_url})` }}
-          />
+          {isHost ? (
+            <EventImageUpload
+              eventId={event.id}
+              currentImageUrl={event.image_url}
+              onImageUploaded={handleImageUploaded}
+            />
+          ) : (
+            event.image_url && (
+              <div
+                className="h-96 bg-cover bg-center rounded-lg mb-8"
+                style={{ backgroundImage: `url(${event.image_url})` }}
+              />
+            )
+          )}
 
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h1 className="text-4xl font-bold">{event.title}</h1>
-              {event.is_official && (
-                <Crown className="h-6 w-6 text-primary" />
-              )}
+              {event.is_official && <Crown className="h-6 w-6 text-primary" />}
             </div>
 
             <div className="flex flex-col gap-4 text-gray-600">
