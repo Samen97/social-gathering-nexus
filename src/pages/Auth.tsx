@@ -81,11 +81,9 @@ const Auth = () => {
                 message: 'text-sm text-red-500',
               },
             }}
-            options={{
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
-              data: {
-                full_name: '',
-              },
+            redirectTo={`${window.location.origin}/auth/callback`}
+            data={{
+              full_name: '',
             }}
           />
         </div>
