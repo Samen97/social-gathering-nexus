@@ -81,7 +81,7 @@ const Auth = () => {
                 }
               }
             }}
-            metaData={{
+            data={{
               full_name: ""
             }}
           />
