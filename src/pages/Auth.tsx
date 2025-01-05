@@ -81,8 +81,8 @@ const Auth = () => {
                 }
               }
             }}
-            additionalData={{
-              full_name: undefined
+            metaData={{
+              full_name: ""
             }}
           />
         </div>
