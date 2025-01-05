@@ -41,7 +41,6 @@ export const NotificationsPopover = () => {
       return data || [];
     },
     enabled: !!session?.user?.id,
-    staleTime: Infinity, // Keep data fresh until explicitly invalidated
   });
 
   const markAsReadMutation = useMutation({
@@ -50,8 +49,7 @@ export const NotificationsPopover = () => {
       const { error } = await supabase
         .from("notifications")
         .update({ is_read: true })
-        .eq("id", notificationId)
-        .select();
+        .eq("id", notificationId);
 
       if (error) {
         console.error("Error marking notification as read:", error);
@@ -59,37 +57,21 @@ export const NotificationsPopover = () => {
         throw error;
       }
     },
-    onMutate: async (notificationId) => {
-      await queryClient.cancelQueries({ queryKey: ["notifications"] });
-      const previousNotifications = queryClient.getQueryData(["notifications"]);
-
-      queryClient.setQueryData(["notifications"], (old: any) => {
-        if (!old) return [];
-        return old.map((notification: any) =>
-          notification.id === notificationId
-            ? { ...notification, is_read: true }
-            : notification
-        );
-      });
-
-      return { previousNotifications };
-    },
-    onError: (err, notificationId, context) => {
-      console.error("Error in mutation:", err);
-      queryClient.setQueryData(["notifications"], context?.previousNotifications);
-      toast.error("Failed to mark notification as read");
-    },
-    onSuccess: (data, notificationId) => {
+    onSuccess: (_, notificationId) => {
       console.log("Successfully marked notification as read:", notificationId);
-      // Update the cache with the new data
-      queryClient.setQueryData(["notifications"], (old: any) => {
-        if (!old) return [];
-        return old.map((notification: any) =>
+      // Update the cache to reflect the change
+      queryClient.setQueryData(["notifications"], (oldData: any) => {
+        if (!oldData) return [];
+        return oldData.map((notification: any) =>
           notification.id === notificationId
             ? { ...notification, is_read: true }
             : notification
         );
       });
+    },
+    onError: (error) => {
+      console.error("Error in mutation:", error);
+      toast.error("Failed to mark notification as read");
     },
   });
 
