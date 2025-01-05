@@ -14,6 +14,8 @@ import Auth from "@/pages/Auth";
 import About from "@/pages/About";
 import Notices from "@/pages/Notices";
 import CreateNotice from "@/pages/CreateNotice";
+import { NoticeBoard } from "@/components/NoticeBoard";
+import { NoticeDetail } from "@/components/NoticeDetail";
 
 const queryClient = new QueryClient();
 
