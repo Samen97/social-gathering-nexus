@@ -81,16 +81,12 @@ const Auth = () => {
                 }
               }
             }}
-            customFields={[
-              {
-                key: 'full_name',
-                name: 'full_name',
-                type: 'text',
-                label: 'Full Name',
-                placeholder: 'Your full name',
-                required: true,
+            options={{
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              data: {
+                full_name: ''
               }
-            ]}
+            }}
           />
         </div>
       </div>
