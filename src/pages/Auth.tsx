@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -58,7 +58,6 @@ const Auth = () => {
             Welcome to South Manchester Social Stuff
           </h1>
           <SupabaseAuth
-            supabaseClient={supabase}
             appearance={{
               theme: ThemeSupa,
               variables: {
@@ -71,13 +70,10 @@ const Auth = () => {
               },
             }}
             providers={[]}
+            supabaseClient={supabase}
+            view="sign_up"
+            showLinks={true}
             redirectTo={`${window.location.origin}/auth/callback`}
-            options={{
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
-              metaData: {
-                required: ["full_name"],
-              },
-            }}
           />
         </div>
       </div>
