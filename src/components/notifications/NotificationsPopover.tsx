@@ -43,6 +43,7 @@ export const NotificationsPopover = () => {
     },
     enabled: !!session?.user?.id,
     refetchInterval: 5000, // Refetch every 5 seconds
+    staleTime: 0, // Consider data always stale to ensure we get fresh data
   });
 
   const markAsReadMutation = useMutation({
@@ -58,16 +59,34 @@ export const NotificationsPopover = () => {
         throw error;
       }
     },
-    onSuccess: (_, notificationId) => {
-      // Update the cache immediately
-      queryClient.setQueryData(["notifications"], (oldData: any) => {
-        if (!oldData) return [];
-        return oldData.map((notification: any) => 
-          notification.id === notificationId 
+    onMutate: async (notificationId) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ["notifications"] });
+
+      // Snapshot the previous value
+      const previousNotifications = queryClient.getQueryData(["notifications"]);
+
+      // Optimistically update to the new value
+      queryClient.setQueryData(["notifications"], (old: any) => {
+        if (!old) return [];
+        return old.map((notification: any) =>
+          notification.id === notificationId
             ? { ...notification, is_read: true }
             : notification
         );
       });
+
+      // Return a context object with the snapshotted value
+      return { previousNotifications };
+    },
+    onError: (err, newNotification, context) => {
+      // If the mutation fails, use the context returned from onMutate to roll back
+      queryClient.setQueryData(["notifications"], context?.previousNotifications);
+      toast.error("Failed to mark notification as read");
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure we have the correct data
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
     },
   });
 
