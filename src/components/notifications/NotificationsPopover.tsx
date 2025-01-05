@@ -29,8 +29,7 @@ export const NotificationsPopover = () => {
         .from("notifications")
         .select("*")
         .eq('user_id', session.user.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
+        .order("created_at", { ascending: false });
 
       if (error) {
         console.error("Error fetching notifications:", error);
@@ -43,15 +42,16 @@ export const NotificationsPopover = () => {
     },
     enabled: !!session?.user?.id,
     staleTime: Infinity, // Keep data fresh until explicitly invalidated
-    gcTime: 60000, // Garbage collection after 1 minute
   });
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: string) => {
+      console.log("Marking notification as read:", notificationId);
       const { error } = await supabase
         .from("notifications")
         .update({ is_read: true })
-        .eq("id", notificationId);
+        .eq("id", notificationId)
+        .select();
 
       if (error) {
         console.error("Error marking notification as read:", error);
@@ -60,13 +60,9 @@ export const NotificationsPopover = () => {
       }
     },
     onMutate: async (notificationId) => {
-      // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["notifications"] });
-
-      // Snapshot the previous value
       const previousNotifications = queryClient.getQueryData(["notifications"]);
 
-      // Optimistically update to the new value
       queryClient.setQueryData(["notifications"], (old: any) => {
         if (!old) return [];
         return old.map((notification: any) =>
@@ -78,14 +74,22 @@ export const NotificationsPopover = () => {
 
       return { previousNotifications };
     },
-    onError: (err, newNotification, context) => {
-      // Rollback on error
+    onError: (err, notificationId, context) => {
+      console.error("Error in mutation:", err);
       queryClient.setQueryData(["notifications"], context?.previousNotifications);
       toast.error("Failed to mark notification as read");
     },
-    onSettled: () => {
-      // Only invalidate after the mutation has settled
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    onSuccess: (data, notificationId) => {
+      console.log("Successfully marked notification as read:", notificationId);
+      // Update the cache with the new data
+      queryClient.setQueryData(["notifications"], (old: any) => {
+        if (!old) return [];
+        return old.map((notification: any) =>
+          notification.id === notificationId
+            ? { ...notification, is_read: true }
+            : notification
+        );
+      });
     },
   });
 
