@@ -15,9 +15,13 @@ const Auth = () => {
     // Check URL parameters for recovery flow
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const type = hashParams.get("type");
+    const accessToken = hashParams.get("access_token");
     
-    if (type === "recovery") {
-      navigate("/password-reset");
+    if (type === "recovery" && accessToken) {
+      console.log("Password recovery flow detected, redirecting to reset page");
+      navigate("/password-reset", { 
+        state: { accessToken, type }
+      });
       return;
     }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,21 +9,25 @@ const PasswordReset = () => {
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
 
   useEffect(() => {
     // Check if we're in a password reset flow
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get("access_token");
-    const type = hashParams.get("type");
+    const accessToken = hashParams.get("access_token") || 
+                       (location.state && location.state.accessToken);
+    const type = hashParams.get("type") || 
+                 (location.state && location.state.type);
 
     if (type === "recovery" && accessToken) {
-      console.log("Password reset flow detected");
+      console.log("Password reset flow detected with token");
+      // The access token is available, we can proceed with the reset
     } else {
-      console.log("No password reset flow detected, redirecting to auth");
+      console.log("No valid password reset flow detected, redirecting to auth");
       navigate("/auth");
     }
-  }, [navigate]);
+  }, [navigate, location]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
