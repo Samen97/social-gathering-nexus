@@ -7,6 +7,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { NoticeHeader } from "./notice/NoticeHeader";
 import { NoticeComments } from "./notice/NoticeComments";
 import { DeleteNoticeDialog } from "./notice/DeleteNoticeDialog";
+import { Button } from "./ui/button";
+import { ArrowLeft } from "lucide-react";
 
 interface Comment {
   id: string;
@@ -126,37 +128,56 @@ export const NoticeDetail = () => {
   }
 
   if (!notice) {
-    return <div>Notice not found</div>;
+    return (
+      <div className="text-center py-8">
+        <p className="text-gray-600 mb-4">Notice not found</p>
+        <Button onClick={() => navigate("/notices")} variant="default">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Notices
+        </Button>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <div className="space-y-6">
-        <NoticeHeader
-          title={notice.title}
-          description={notice.description}
-          authorName={notice.profiles.full_name || "Anonymous"}
-          createdAt={new Date(notice.created_at).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-          canDelete={session?.user?.id === notice.created_by}
-          onDeleteClick={() => setDeleteDialogOpen(true)}
-        />
+    <div className="space-y-6">
+      <Button
+        onClick={() => navigate("/notices")}
+        variant="ghost"
+        className="mb-4"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back to Notices
+      </Button>
 
-        <NoticeComments
-          comments={notice.notice_comments}
-          onAddComment={(content) => addCommentMutation.mutate(content)}
-          onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
-          isAddingComment={addCommentMutation.isPending}
-        />
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="space-y-6">
+          <NoticeHeader
+            title={notice.title}
+            description={notice.description}
+            authorName={notice.profiles.full_name || "Anonymous"}
+            createdAt={new Date(notice.created_at).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+            canDelete={session?.user?.id === notice.created_by}
+            onDeleteClick={() => setDeleteDialogOpen(true)}
+          />
 
-        <DeleteNoticeDialog
-          open={deleteDialogOpen}
-          onOpenChange={setDeleteDialogOpen}
-          onConfirm={() => deleteNoticeMutation.mutate()}
-        />
+          <NoticeComments
+            comments={notice.notice_comments}
+            onAddComment={(content) => addCommentMutation.mutate(content)}
+            onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
+            isAddingComment={addCommentMutation.isPending}
+          />
+
+          <DeleteNoticeDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            onConfirm={() => deleteNoticeMutation.mutate()}
+          />
+        </div>
       </div>
     </div>
   );
