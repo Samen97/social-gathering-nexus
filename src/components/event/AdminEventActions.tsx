@@ -7,9 +7,10 @@ import { useQueryClient } from "@tanstack/react-query";
 interface AdminEventActionsProps {
   eventId: string;
   currentStatus: string;
+  onStatusChange?: () => void;
 }
 
-export const AdminEventActions = ({ eventId, currentStatus }: AdminEventActionsProps) => {
+export const AdminEventActions = ({ eventId, currentStatus, onStatusChange }: AdminEventActionsProps) => {
   const queryClient = useQueryClient();
 
   const handleStatusUpdate = async (newStatus: 'approved' | 'rejected') => {
@@ -23,6 +24,7 @@ export const AdminEventActions = ({ eventId, currentStatus }: AdminEventActionsP
 
       toast.success(`Event ${newStatus} successfully`);
       queryClient.invalidateQueries({ queryKey: ["events"] });
+      onStatusChange?.();
     } catch (error) {
       console.error('Error updating event status:', error);
       toast.error('Failed to update event status');

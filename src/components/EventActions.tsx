@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { useSession } from "@supabase/auth-helpers-react";
 
 interface EventActionsProps {
   eventId: string;
@@ -22,6 +24,20 @@ export const EventActions = ({
 }: EventActionsProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const session = useSession();
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: async () => {
+      if (!session?.user) return false;
+      const { data, error } = await supabase.rpc('is_admin', {
+        input_user_id: session.user.id
+      });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user,
+  });
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -54,7 +70,7 @@ export const EventActions = ({
           : "Attend Event"}
       </Button>
 
-      {isHost && (
+      {(isHost || isAdmin) && (
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="destructive">Delete Event</Button>

@@ -16,9 +16,10 @@ interface Event {
 
 interface PendingEventSectionProps {
   events: Event[];
+  onEventUpdate?: (eventId: string) => void;
 }
 
-export const PendingEventSection = ({ events }: PendingEventSectionProps) => {
+export const PendingEventSection = ({ events, onEventUpdate }: PendingEventSectionProps) => {
   const navigate = useNavigate();
 
   if (!events || events.length === 0) return null;
@@ -50,6 +51,7 @@ export const PendingEventSection = ({ events }: PendingEventSectionProps) => {
               <AdminEventActions 
                 eventId={event.id} 
                 currentStatus={event.approval_status}
+                onStatusChange={() => onEventUpdate?.(event.id)}
               />
             </div>
           </div>

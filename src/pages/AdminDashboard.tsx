@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PendingEventSection } from "@/components/event/PendingEventSection";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const AdminDashboard = () => {
   const session = useSession();
   const navigate = useNavigate();
+  const [localPendingEvents, setLocalPendingEvents] = useState<any[]>([]);
 
   const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
     queryKey: ["isAdmin"],
@@ -45,10 +46,20 @@ const AdminDashboard = () => {
   });
 
   useEffect(() => {
+    if (pendingEvents) {
+      setLocalPendingEvents(pendingEvents);
+    }
+  }, [pendingEvents]);
+
+  useEffect(() => {
     if (!isCheckingAdmin && !isAdmin) {
       navigate("/");
     }
   }, [isAdmin, isCheckingAdmin, navigate]);
+
+  const handleEventUpdate = (eventId: string) => {
+    setLocalPendingEvents((prev) => prev.filter((event) => event.id !== eventId));
+  };
 
   if (isCheckingAdmin) {
     return (
@@ -76,7 +87,10 @@ const AdminDashboard = () => {
         </TabsList>
 
         <TabsContent value="pending-events">
-          <PendingEventSection events={pendingEvents || []} />
+          <PendingEventSection 
+            events={localPendingEvents} 
+            onEventUpdate={handleEventUpdate}
+          />
         </TabsContent>
 
         <TabsContent value="all-events">
