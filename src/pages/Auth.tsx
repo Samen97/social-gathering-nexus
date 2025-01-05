@@ -69,26 +69,11 @@ const Auth = () => {
                 },
               },
             }}
-            providers={[]}
             supabaseClient={supabase}
-            view="sign_up"
+            view="sign_in"
             showLinks={true}
             redirectTo={`${window.location.origin}/auth/callback`}
-            localization={{
-              variables: {
-                sign_up: {
-                  email_label: 'Email',
-                  password_label: 'Password',
-                  email_input_placeholder: 'Your email address',
-                  password_input_placeholder: 'Your password',
-                  button_label: 'Sign up',
-                  loading_button_label: 'Signing up...',
-                }
-              }
-            }}
-            additionalData={{
-              full_name: true
-            }}
+            providers={[]}
           />
         </div>
       </div>
