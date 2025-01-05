@@ -81,9 +81,6 @@ const Auth = () => {
                 }
               }
             }}
-            data={{
-              full_name: ""
-            }}
           />
         </div>
       </div>
