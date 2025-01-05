@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useEffect } from "react";
+import { NotificationsPopover } from "./notifications/NotificationsPopover";
 
 export const Navbar = () => {
   const location = useLocation();
@@ -144,6 +145,7 @@ export const Navbar = () => {
                     </div>
                   </SheetContent>
                 </Sheet>
+                <NotificationsPopover />
                 <Button
                   variant="ghost"
                   onClick={handleSignOut}
