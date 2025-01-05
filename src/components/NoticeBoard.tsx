@@ -23,8 +23,8 @@ export const NoticeBoard = () => {
   const { data: notices, isLoading } = useQuery({
     queryKey: ["notices"],
     queryFn: async () => {
-      console.log("Starting notice fetch...");
-      
+      console.log("Fetching notices with session:", !!session); // Debug log for auth state
+
       const { data: notices, error } = await supabase
         .from("notices")
         .select(`
@@ -45,7 +45,7 @@ export const NoticeBoard = () => {
         throw error;
       }
       
-      console.log("Notices fetch successful:", notices);
+      console.log("Raw notices response:", notices); // Debug log for raw response
       return notices as Notice[];
     },
   });
@@ -56,9 +56,13 @@ export const NoticeBoard = () => {
 
   // Ensure notices is an array before filtering
   const safeNotices = Array.isArray(notices) ? notices : [];
+  console.log("Safe notices array:", safeNotices); // Debug log for processed array
 
   const pinnedNotices = safeNotices.filter((notice) => notice.is_pinned);
   const regularNotices = safeNotices.filter((notice) => !notice.is_pinned);
+
+  console.log("Pinned notices:", pinnedNotices); // Debug log for pinned notices
+  console.log("Regular notices:", regularNotices); // Debug log for regular notices
 
   const NoticeCard = ({ notice }: { notice: Notice }) => (
     <Card
