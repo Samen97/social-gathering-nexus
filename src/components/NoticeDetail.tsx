@@ -77,9 +77,12 @@ export const NoticeDetail = () => {
         .select("role")
         .eq("user_id", session.user.id)
         .eq("role", "admin")
-        .single();
+        .maybeSingle(); // Changed from .single() to .maybeSingle()
       
-      if (error) return false;
+      if (error) {
+        console.error("Error checking admin status:", error);
+        return false;
+      }
       return !!data;
     },
   });
