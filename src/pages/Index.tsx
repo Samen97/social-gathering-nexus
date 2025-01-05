@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { EventCard } from "@/components/EventCard";
-import { Navbar } from "@/components/Navbar";
 import { Calendar, Users, MapPin, Heart, CalendarClock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -37,8 +36,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
-      <Navbar />
-      
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/10 backdrop-blur-sm" />
