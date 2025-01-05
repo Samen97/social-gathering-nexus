@@ -141,24 +141,6 @@ const Index = () => {
             room for new friends and adventures. Host your own events or join
             existing ones - the choice is yours!
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              variant="secondary"
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90"
-              onClick={() => navigate("/auth")}
-            >
-              Get Started
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-white text-white hover:bg-white/10"
-              onClick={() => navigate("/about")}
-            >
-              Learn More
-            </Button>
-          </div>
         </div>
       </section>
     </div>
