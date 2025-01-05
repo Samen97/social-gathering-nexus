@@ -3,11 +3,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "@supabase/auth-helpers-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Calendar, MapPin, Users, Crown } from "lucide-react";
 import { EventActions } from "@/components/EventActions";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { EventImageUpload } from "@/components/EventImageUpload";
+import { EventGallery } from "@/components/EventGallery";
+import { EventHeader } from "@/components/event/EventHeader";
+import { EventInfo } from "@/components/event/EventInfo";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -20,13 +22,11 @@ const EventDetail = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("events")
-        .select(
-          `
+        .select(`
           *,
           profiles:created_by(full_name),
           event_attendees(user_id, status)
-        `
-        )
+        `)
         .eq("id", id)
         .single();
 
@@ -124,18 +124,6 @@ const EventDetail = () => {
     );
   }
 
-  const handleAttendance = () => {
-    if (!session) {
-      navigate("/auth");
-      return;
-    }
-    if (userAttendance) {
-      cancelAttendanceMutation.mutate();
-    } else {
-      attendMutation.mutate();
-    }
-  };
-
   const attendeeCount = event.event_attendees?.length || 0;
   const isAtCapacity =
     event.max_attendees !== null && attendeeCount >= event.max_attendees;
@@ -145,7 +133,7 @@ const EventDetail = () => {
     <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto space-y-8">
           {isHost ? (
             <EventImageUpload
               eventId={event.id}
@@ -155,46 +143,28 @@ const EventDetail = () => {
           ) : (
             event.image_url && (
               <div
-                className="h-96 bg-cover bg-center rounded-lg mb-8"
+                className="h-96 bg-cover bg-center rounded-lg"
                 style={{ backgroundImage: `url(${event.image_url})` }}
               />
             )
           )}
 
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h1 className="text-4xl font-bold">{event.title}</h1>
-              {event.is_official && <Crown className="h-6 w-6 text-primary" />}
-            </div>
+            <EventHeader title={event.title} isOfficial={event.is_official} />
 
-            <div className="flex flex-col gap-4 text-gray-600">
-              <div className="flex items-center">
-                <Calendar className="h-5 w-5 mr-2" />
-                <span>
-                  {new Date(event.date).toLocaleDateString("en-US", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "numeric",
-                  })}
-                </span>
-              </div>
-
-              <div className="flex items-center">
-                <MapPin className="h-5 w-5 mr-2" />
-                <span>{event.location}</span>
-              </div>
-
-              <div className="flex items-center">
-                <Users className="h-5 w-5 mr-2" />
-                <span>
-                  {attendeeCount} attending
-                  {event.max_attendees && ` (max ${event.max_attendees})`}
-                </span>
-              </div>
-            </div>
+            <EventInfo
+              date={new Date(event.date).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              })}
+              location={event.location}
+              attendeeCount={attendeeCount}
+              maxAttendees={event.max_attendees}
+            />
 
             <p className="text-gray-700 whitespace-pre-wrap">
               {event.description}
@@ -206,6 +176,13 @@ const EventDetail = () => {
               isAttending={!!userAttendance}
               isAtCapacity={isAtCapacity}
               onAttendanceChange={handleAttendance}
+            />
+
+            <EventGallery
+              eventId={event.id}
+              images={event.image_urls || []}
+              isHost={isHost}
+              onImagesChange={() => queryClient.invalidateQueries({ queryKey: ["event", id] })}
             />
           </div>
         </div>
