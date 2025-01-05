@@ -4,7 +4,7 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -34,12 +34,13 @@ const Auth = () => {
           title: "Signed out",
           duration: 2000,
         });
-      } else if (event === 'USER_UPDATED') {
-        console.log("User updated:", session);
-      } else if (event === 'USER_DELETED') {
-        console.log("User deleted");
       } else if (event === 'PASSWORD_RECOVERY') {
         console.log("Password recovery requested");
+        toast({
+          title: "Password Recovery",
+          description: "Please check your email for reset instructions",
+          duration: 5000,
+        });
       }
     });
 
@@ -90,15 +91,6 @@ const Auth = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
-            onError={(error) => {
-              console.error("Auth error:", error);
-              toast({
-                title: "Authentication Error",
-                description: error.message,
-                variant: "destructive",
-                duration: 5000,
-              });
-            }}
           />
         </div>
       </div>
