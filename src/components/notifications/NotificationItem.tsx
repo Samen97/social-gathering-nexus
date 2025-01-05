@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
-import { Bell, Calendar, MessageSquare } from "lucide-react";
+import { Bell, Calendar, MessageSquare, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface NotificationItemProps {
   id: string;
@@ -29,59 +31,44 @@ export const NotificationItem = ({
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const handleClick = async () => {
-    console.log("Notification clicked:", { type, title, reference_id });
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the parent click event
     
-    if (is_read) {
-      // If already read, just navigate
-      if (reference_id) {
-        if (type.includes('event')) {
-          navigate(`/events/${reference_id}`);
-        } else if (type.includes('notice')) {
-          navigate(`/notices/${reference_id}`);
-        }
-        if (onClose) {
-          onClose();
-        }
-      }
-      return;
-    }
-
     try {
-      // Mark notification as read in the database
       const { error } = await supabase
         .from('notifications')
-        .update({ is_read: true })
+        .delete()
         .eq('id', id);
 
       if (error) {
-        console.error("Error marking notification as read:", error);
+        console.error("Error deleting notification:", error);
+        toast.error("Failed to delete notification");
         return;
       }
 
-      // Update the cache directly instead of invalidating
+      // Update the cache directly to remove the notification
       queryClient.setQueryData(["notifications"], (oldData: any) => {
         if (!oldData) return [];
-        return oldData.map((notification: any) =>
-          notification.id === id
-            ? { ...notification, is_read: true }
-            : notification
-        );
+        return oldData.filter((notification: any) => notification.id !== id);
       });
 
-      // Navigate to the referenced item if available
-      if (reference_id) {
-        if (type.includes('event')) {
-          navigate(`/events/${reference_id}`);
-        } else if (type.includes('notice')) {
-          navigate(`/notices/${reference_id}`);
-        }
-        if (onClose) {
-          onClose();
-        }
-      }
+      toast.success("Notification deleted");
     } catch (error) {
-      console.error("Error handling notification click:", error);
+      console.error("Error deleting notification:", error);
+      toast.error("Failed to delete notification");
+    }
+  };
+
+  const handleClick = () => {
+    if (reference_id) {
+      if (type.includes('event')) {
+        navigate(`/events/${reference_id}`);
+      } else if (type.includes('notice')) {
+        navigate(`/notices/${reference_id}`);
+      }
+      if (onClose) {
+        onClose();
+      }
     }
   };
 
@@ -92,7 +79,7 @@ export const NotificationItem = ({
     <div
       onClick={handleClick}
       className={cn(
-        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background transition-opacity duration-300",
+        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background transition-opacity duration-300 relative",
         !is_read && "bg-accent",
         is_read && "opacity-50"
       )}
@@ -105,6 +92,14 @@ export const NotificationItem = ({
           {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
         </p>
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="absolute top-2 right-2 h-6 w-6 hover:bg-destructive hover:text-destructive-foreground"
+        onClick={handleDelete}
+      >
+        <X className="h-4 w-4" />
+      </Button>
     </div>
   );
 };
