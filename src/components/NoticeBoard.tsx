@@ -44,7 +44,7 @@ export const NoticeBoard = () => {
         throw error;
       }
       
-      console.log("Fetched notices:", notices); // Debug log
+      console.log("Raw notices response:", notices); // Additional debug log
       return notices as Notice[];
     },
   });
@@ -55,6 +55,8 @@ export const NoticeBoard = () => {
 
   // Ensure notices is an array before filtering
   const safeNotices = Array.isArray(notices) ? notices : [];
+  console.log("Safe notices array:", safeNotices); // Debug log
+
   const pinnedNotices = safeNotices.filter((notice) => notice.is_pinned);
   const regularNotices = safeNotices.filter((notice) => !notice.is_pinned);
 
