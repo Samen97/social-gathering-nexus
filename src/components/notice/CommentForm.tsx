@@ -9,9 +9,14 @@ import { toast } from "sonner";
 interface CommentFormProps {
   onAddComment: (content: string) => void;
   isAddingComment: boolean;
+  placeholder?: string;
 }
 
-export const CommentForm = ({ onAddComment, isAddingComment }: CommentFormProps) => {
+export const CommentForm = ({
+  onAddComment,
+  isAddingComment,
+  placeholder = "Write a comment...",
+}: CommentFormProps) => {
   const session = useSession();
   const navigate = useNavigate();
   const [newComment, setNewComment] = useState("");
@@ -37,14 +42,10 @@ export const CommentForm = ({ onAddComment, isAddingComment }: CommentFormProps)
       <Textarea
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
-        placeholder="Write a comment..."
+        placeholder={placeholder}
         className="flex-1"
       />
-      <Button
-        size="icon"
-        onClick={handleAddComment}
-        disabled={isAddingComment}
-      >
+      <Button size="icon" onClick={handleAddComment} disabled={isAddingComment}>
         <Send className="h-4 w-4" />
       </Button>
     </div>

@@ -72,11 +72,12 @@ const EventDetail = () => {
   });
 
   const addCommentMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async ({ content, parentId }: { content: string; parentId?: string }) => {
       const { error } = await supabase.from("event_comments").insert({
         event_id: id,
         created_by: session?.user?.id,
         content,
+        parent_id: parentId,
       });
       if (error) throw error;
     },
@@ -258,7 +259,9 @@ const EventDetail = () => {
 
             <NoticeComments
               comments={comments || []}
-              onAddComment={(content) => addCommentMutation.mutate(content)}
+              onAddComment={(content, parentId) =>
+                addCommentMutation.mutate({ content, parentId })
+              }
               onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
               isAddingComment={addCommentMutation.isPending}
             />

@@ -45,6 +45,7 @@ export type Database = {
           created_by: string | null
           event_id: string | null
           id: string
+          parent_id: string | null
           updated_at: string
         }
         Insert: {
@@ -53,6 +54,7 @@ export type Database = {
           created_by?: string | null
           event_id?: string | null
           id?: string
+          parent_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -61,6 +63,7 @@ export type Database = {
           created_by?: string | null
           event_id?: string | null
           id?: string
+          parent_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -76,6 +79,13 @@ export type Database = {
             columns: ["event_id"]
             isOneToOne: false
             referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "event_comments"
             referencedColumns: ["id"]
           },
         ]
