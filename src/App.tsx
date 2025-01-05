@@ -28,8 +28,11 @@ function App() {
               <Route path="/events" element={<Events />} />
               <Route path="/events/create" element={<CreateEvent />} />
               <Route path="/events/:id" element={<EventDetail />} />
-              <Route path="/notices" element={<Notices />} />
-              <Route path="/notices/create" element={<CreateNotice />} />
+              <Route path="/notices" element={<Notices />}>
+                <Route index element={<NoticeBoard />} />
+                <Route path="create" element={<CreateNotice />} />
+                <Route path=":id" element={<NoticeDetail />} />
+              </Route>
               <Route path="/auth" element={<Auth />} />
               <Route path="/about" element={<About />} />
             </Routes>
