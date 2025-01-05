@@ -38,7 +38,7 @@ interface Notice {
   profiles: {
     full_name: string | null;
   };
-  comments?: Comment[];
+  notice_comments: Comment[];
 }
 
 export const NoticeDetail = () => {
