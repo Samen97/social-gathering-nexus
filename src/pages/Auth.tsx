@@ -62,6 +62,7 @@ const Auth = () => {
                 },
               },
             }}
+            providers={[]}
             redirectTo={window.location.origin + "/auth/callback"}
           />
         </div>
