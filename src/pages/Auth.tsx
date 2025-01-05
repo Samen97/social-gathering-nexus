@@ -20,11 +20,10 @@ const Auth = () => {
       return;
     }
 
-    // Check for existing session
+    // Only redirect if we have a session
     if (session) {
       console.log("Existing session found, redirecting to home");
       navigate('/');
-      return;
     }
 
     // Listen for auth state changes
@@ -73,7 +72,6 @@ const Auth = () => {
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
             magicLink={false}
-            view="sign_up"
             additionalData={{
               full_name: {
                 required: true,
