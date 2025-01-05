@@ -36,7 +36,6 @@ export const NotificationItem = ({
       }
       if (onClose) {
         onClose();
-        toast.success("Notification marked as read");
       }
     }
   };
@@ -48,8 +47,9 @@ export const NotificationItem = ({
     <div
       onClick={handleClick}
       className={cn(
-        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background",
-        !is_read && "bg-accent"
+        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background transition-opacity duration-300",
+        !is_read && "bg-accent",
+        is_read && "opacity-50"
       )}
     >
       <Icon className="h-5 w-5 mt-1 text-primary" />
