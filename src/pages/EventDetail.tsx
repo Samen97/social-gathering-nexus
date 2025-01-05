@@ -96,6 +96,14 @@ const EventDetail = () => {
     },
   });
 
+  const handleAttendance = () => {
+    if (userAttendance) {
+      cancelAttendanceMutation.mutate();
+    } else {
+      attendMutation.mutate();
+    }
+  };
+
   if (isLoading) {
     return (
       <>
