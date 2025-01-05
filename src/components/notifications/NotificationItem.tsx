@@ -43,8 +43,8 @@ export const NotificationItem = ({
     <div
       onClick={handleClick}
       className={cn(
-        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer",
-        !is_read && "bg-accent/50"
+        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background",
+        !is_read && "bg-accent"
       )}
     >
       <Icon className="h-5 w-5 mt-1 text-primary" />

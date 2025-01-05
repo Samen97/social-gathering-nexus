@@ -43,11 +43,14 @@ export const NotificationsPopover = () => {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
-        <div className="p-4 border-b">
+      <PopoverContent 
+        className="w-80 p-0 bg-background border shadow-lg" 
+        align="end"
+      >
+        <div className="p-4 border-b bg-background">
           <h4 className="text-sm font-medium">Notifications</h4>
         </div>
-        <ScrollArea className="h-[400px]">
+        <ScrollArea className="h-[400px] bg-background">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <NotificationItem
@@ -56,7 +59,7 @@ export const NotificationsPopover = () => {
               />
             ))
           ) : (
-            <div className="p-4 text-center text-sm text-muted-foreground">
+            <div className="p-4 text-center text-sm text-muted-foreground bg-background">
               No notifications
             </div>
           )}
