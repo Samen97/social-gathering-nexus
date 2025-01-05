@@ -15,7 +15,7 @@ const About = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                South Manchester Social is more than just a group—it's a thriving community for anyone looking to connect, make friends, and discover the best of South Manchester. Whether you're new to the area or a lifelong local, our regular social events, activities, and meetups offer something for everyone. From casual coffee catch-ups to adventurous outings, we're here to bring people together and create meaningful connections.
+                South Manchester Social Stuff is more than just a group—it's a thriving community for anyone looking to connect, make friends, and discover the best of South Manchester. Whether you're new to the area or a lifelong local, our regular social events, activities, and meetups offer something for everyone. From casual coffee catch-ups to adventurous outings, we're here to bring people together and create meaningful connections.
               </p>
             </CardContent>
           </Card>
