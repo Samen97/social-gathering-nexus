@@ -63,7 +63,8 @@ export const EventForm = () => {
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from("events").insert({
+      // Create the event
+      const { data: newEvent, error } = await supabase.from("events").insert({
         title: data.title,
         description: data.description,
         date: new Date(data.date).toISOString(),
@@ -73,9 +74,22 @@ export const EventForm = () => {
         created_by: session.user.id,
         is_official: isAdmin,
         approval_status: isAdmin ? 'approved' : 'pending',
-      });
+      }).select().single();
 
       if (error) throw error;
+
+      // Call the notify-event function
+      const { error: notifyError } = await supabase.functions.invoke('notify-event', {
+        body: { event: newEvent }
+      });
+
+      if (notifyError) {
+        console.error('Error calling notify-event function:', notifyError);
+        // Don't throw here, we still want to show success for event creation
+        toast.error('Event created but notifications may be delayed');
+      } else {
+        console.log('Successfully called notify-event function');
+      }
 
       toast.success("Event created successfully!");
       navigate("/events");
