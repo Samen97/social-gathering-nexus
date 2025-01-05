@@ -42,6 +42,16 @@ const Auth = () => {
     };
   }, [session, navigate, toast]);
 
+  const handleAuthError = (error: any) => {
+    let errorMessage = "User not found. Please check your credentials or sign up.";
+    
+    toast({
+      variant: "destructive",
+      title: "Authentication Error",
+      description: errorMessage,
+    });
+  };
+
   return (
     <div className="min-h-screen bg-accent/50 flex items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
@@ -76,13 +86,7 @@ const Auth = () => {
           }}
           providers={[]}
           redirectTo={window.location.origin}
-          onError={(error) => {
-            toast({
-              variant: "destructive",
-              title: "Authentication Error",
-              description: error.message,
-            });
-          }}
+          onAuthError={handleAuthError}
         />
       </div>
     </div>
