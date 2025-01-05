@@ -10,6 +10,8 @@ import { EventImageUpload } from "@/components/EventImageUpload";
 import { EventGallery } from "@/components/EventGallery";
 import { EventHeader } from "@/components/event/EventHeader";
 import { EventInfo } from "@/components/event/EventInfo";
+import { NoticeComments } from "@/components/notice/NoticeComments";
+import { ArrowLeft } from "lucide-react";
 
 const EventDetail = () => {
   const { id } = useParams();
@@ -35,6 +37,23 @@ const EventDetail = () => {
     },
   });
 
+  const { data: comments } = useQuery({
+    queryKey: ["eventComments", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("event_comments")
+        .select(`
+          *,
+          profiles:created_by(full_name)
+        `)
+        .eq("event_id", id)
+        .order("created_at", { ascending: true });
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: userAttendance } = useQuery({
     queryKey: ["attendance", id],
     queryFn: async () => {
@@ -50,6 +69,41 @@ const EventDetail = () => {
       return data;
     },
     enabled: !!session?.user,
+  });
+
+  const addCommentMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const { error } = await supabase.from("event_comments").insert({
+        event_id: id,
+        created_by: session?.user?.id,
+        content,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eventComments", id] });
+      toast.success("Comment added successfully");
+    },
+    onError: () => {
+      toast.error("Failed to add comment");
+    },
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      const { error } = await supabase
+        .from("event_comments")
+        .delete()
+        .eq("id", commentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eventComments", id] });
+      toast.success("Comment deleted successfully");
+    },
+    onError: () => {
+      toast.error("Failed to delete comment");
+    },
   });
 
   const handleImageUploaded = (newImageUrl: string) => {
@@ -141,6 +195,15 @@ const EventDetail = () => {
     <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/events")}
+          className="mb-4"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+
         <div className="max-w-4xl mx-auto space-y-8">
           {isHost ? (
             <EventImageUpload
@@ -191,6 +254,13 @@ const EventDetail = () => {
               images={event.image_urls || []}
               isHost={isHost}
               onImagesChange={() => queryClient.invalidateQueries({ queryKey: ["event", id] })}
+            />
+
+            <NoticeComments
+              comments={comments || []}
+              onAddComment={(content) => addCommentMutation.mutate(content)}
+              onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
+              isAddingComment={addCommentMutation.isPending}
             />
           </div>
         </div>
