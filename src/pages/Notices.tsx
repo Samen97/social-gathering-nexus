@@ -2,6 +2,7 @@ import { NoticeBoard } from "@/components/NoticeBoard";
 import { NoticeDetail } from "@/components/NoticeDetail";
 import { Navbar } from "@/components/Navbar";
 import { Routes, Route } from "react-router-dom";
+import CreateNotice from "./CreateNotice";
 
 const Notices = () => {
   return (
@@ -9,7 +10,8 @@ const Notices = () => {
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <Routes>
-          <Route path="/" element={<NoticeBoard />} />
+          <Route index element={<NoticeBoard />} />
+          <Route path="create" element={<CreateNotice />} />
           <Route path=":id" element={<NoticeDetail />} />
         </Routes>
       </main>
