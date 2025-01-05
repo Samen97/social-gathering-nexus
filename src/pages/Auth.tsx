@@ -81,7 +81,7 @@ const Auth = () => {
                 }
               }
             }}
-            options={{
+            signUpOptions={{
               emailRedirectTo: `${window.location.origin}/auth/callback`,
               data: {
                 full_name: undefined
