@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,38 +9,7 @@ const PasswordReset = () => {
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
   const { toast } = useToast();
-
-  useEffect(() => {
-    const handlePasswordRecovery = async () => {
-      try {
-        const { error } = await supabase.auth.resetPasswordForEmail(
-          "user@example.com", // This will be overridden by the token
-          {
-            redirectTo: `${window.location.origin}/password-reset`,
-          }
-        );
-        
-        if (error) throw error;
-      } catch (error: any) {
-        console.error("Error in password recovery:", error);
-        toast({
-          title: "Error initiating password reset",
-          description: error.message,
-          variant: "destructive",
-          duration: 5000,
-        });
-        navigate("/auth");
-      }
-    };
-
-    // Check if we're in a recovery flow
-    const session = supabase.auth.getSession();
-    if (!session) {
-      handlePasswordRecovery();
-    }
-  }, [navigate, toast]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
