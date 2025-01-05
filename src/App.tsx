@@ -7,6 +7,7 @@ import EventDetail from "@/pages/EventDetail";
 import CreateEvent from "@/pages/CreateEvent";
 import Notices from "@/pages/Notices";
 import Auth from "@/pages/Auth";
+import PasswordReset from "@/pages/PasswordReset";
 import AdminDashboard from "@/pages/AdminDashboard";
 import { Navbar } from "@/components/Navbar";
 
@@ -42,6 +43,7 @@ function App() {
           element={session ? <Notices /> : <Navigate to="/auth" replace />} 
         />
         <Route path="/auth" element={<Auth />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
           path="/admin" 
           element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} 
