@@ -81,17 +81,10 @@ const Auth = () => {
                 message: 'text-sm text-red-500',
               },
             }}
-            localization={{
-              variables: {
-                sign_up: {
-                  full_name_label: 'Full Name',
-                  full_name_placeholder: 'Enter your full name',
-                },
-              },
-            }}
-            additionalData={{
-              full_name: {
-                required: true,
+            options={{
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              data: {
+                full_name: '',
               },
             }}
           />
