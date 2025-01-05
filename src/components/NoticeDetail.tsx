@@ -11,17 +11,61 @@ import { useAdminStatus } from "./notice/useAdminStatus";
 import { useNoticeDelete } from "./notice/useNoticeDelete";
 import { useTogglePin } from "./notice/useTogglePin";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export const NoticeDetail = () => {
   const session = useSession();
   const navigate = useNavigate();
   const { id } = useParams();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   const { data: notice, isLoading } = useNoticeQuery(id);
   const { data: isAdmin } = useAdminStatus();
   const deleteNoticeMutation = useNoticeDelete(id);
   const togglePinMutation = useTogglePin(id);
+
+  const addCommentMutation = useMutation({
+    mutationFn: async (content: string) => {
+      if (!session?.user?.id) throw new Error("Must be logged in to comment");
+      
+      const { error } = await supabase.from("notice_comments").insert({
+        notice_id: id,
+        content,
+        created_by: session.user.id,
+      });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notice', id] });
+      toast.success("Comment added successfully");
+    },
+    onError: (error) => {
+      console.error("Error adding comment:", error);
+      toast.error("Failed to add comment");
+    }
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      const { error } = await supabase
+        .from("notice_comments")
+        .delete()
+        .eq("id", commentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notice', id] });
+      toast.success("Comment deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Error deleting comment:", error);
+      toast.error("Failed to delete comment");
+    }
+  });
 
   if (isLoading) {
     return <div className="animate-pulse bg-white rounded-lg h-48" />;
@@ -76,25 +120,9 @@ export const NoticeDetail = () => {
               created_by: comment.created_by,
               authorName: comment.profiles?.full_name || "Anonymous",
             }))}
-            onAddComment={(content) => {
-              if (!session?.user?.id) throw new Error("Must be logged in to comment");
-              
-              const { error } = await supabase.from("notice_comments").insert({
-                notice_id: id,
-                content,
-                created_by: session.user.id,
-              });
-              
-              if (error) throw error;
-            }}
-            onDeleteComment={(commentId) => {
-              const { error } = await supabase
-                .from("notice_comments")
-                .delete()
-                .eq("id", commentId);
-              if (error) throw error;
-            }}
-            isAddingComment={false}
+            onAddComment={(content) => addCommentMutation.mutate(content)}
+            onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
+            isAddingComment={addCommentMutation.isPending}
           />
 
           <DeleteNoticeDialog
