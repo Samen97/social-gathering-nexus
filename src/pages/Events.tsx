@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { EventCard } from "@/components/EventCard";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
@@ -10,7 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { EventCalendar } from "@/components/EventCalendar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
-import { AdminEventActions } from "@/components/event/AdminEventActions";
+import { EventSection } from "@/components/event/EventSection";
+import { PendingEventSection } from "@/components/event/PendingEventSection";
 
 const Events = () => {
   const session = useSession();
@@ -22,7 +22,7 @@ const Events = () => {
     queryFn: async () => {
       if (!session?.user) return false;
       const { data, error } = await supabase.rpc('is_admin', {
-        user_id: session.user.id
+        input_user_id: session.user.id
       });
       if (error) throw error;
       return data;
@@ -54,6 +54,19 @@ const Events = () => {
   const communityEvents = events?.filter((event) => !event.is_official);
   const pendingEvents = events?.filter((event) => !event.is_official && event.approval_status === 'pending');
 
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[1, 2, 3].map((n) => (
+          <div
+            key={n}
+            className="animate-pulse bg-white rounded-lg shadow-md h-96"
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
       <Navbar />
@@ -75,127 +88,33 @@ const Events = () => {
             selectedDate={selectedDate}
           />
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="animate-pulse bg-white rounded-lg shadow-md h-96"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="space-y-12">
-              {/* Admin Section - Pending Events */}
-              {isAdmin && pendingEvents && pendingEvents.length > 0 && (
-                <div>
-                  <h2 className="text-2xl font-semibold mb-6 text-orange-600">Pending Approval</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {pendingEvents.map((event) => (
-                      <div key={event.id} className="relative">
-                        <EventCard
-                          title={event.title}
-                          date={new Date(event.date).toLocaleDateString("en-US", {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
-                            hour: "numeric",
-                            minute: "numeric",
-                          })}
-                          location={event.location}
-                          description={event.description || ""}
-                          imageUrl={event.image_url || "/placeholder.svg"}
-                          attendees={event.event_attendees?.length || 0}
-                          isOfficial={event.is_official}
-                          onClick={() => navigate(`/events/${event.id}`)}
-                        />
-                        <div className="absolute top-4 right-4">
-                          <AdminEventActions 
-                            eventId={event.id} 
-                            currentStatus={event.approval_status}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+          <div className="space-y-12">
+            {isAdmin && <PendingEventSection events={pendingEvents || []} />}
 
-              {/* Official Events Section */}
-              <div>
-                <h2 className="text-2xl font-semibold mb-6 text-primary">Official Events</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {officialEvents?.map((event) => (
-                    <EventCard
-                      key={event.id}
-                      title={event.title}
-                      date={new Date(event.date).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                      })}
-                      location={event.location}
-                      description={event.description || ""}
-                      imageUrl={event.image_url || "/placeholder.svg"}
-                      attendees={event.event_attendees?.length || 0}
-                      isOfficial={event.is_official}
-                      onClick={() => navigate(`/events/${event.id}`)}
-                    />
-                  ))}
-                  {officialEvents?.length === 0 && (
-                    <p className="col-span-full text-center text-gray-500 py-8">
-                      No official events scheduled.
-                    </p>
-                  )}
-                </div>
-              </div>
+            <EventSection
+              title="Official Events"
+              events={officialEvents || []}
+              emptyMessage="No official events scheduled."
+            />
 
-              {/* Community Events Section */}
-              <div>
-                <div className="mb-6">
-                  <h2 className="text-2xl font-semibold mb-4">Community Events</h2>
-                  <Alert variant="info" className="mb-6">
-                    <InfoIcon className="h-4 w-4" />
-                    <AlertDescription>
-                      Community events are created by members and subject to approval. 
-                      These events are not officially organized by South Manchester Social Stuff.
-                    </AlertDescription>
-                  </Alert>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {communityEvents?.filter(event => event.approval_status === 'approved').map((event) => (
-                    <EventCard
-                      key={event.id}
-                      title={event.title}
-                      date={new Date(event.date).toLocaleDateString("en-US", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                      })}
-                      location={event.location}
-                      description={event.description || ""}
-                      imageUrl={event.image_url || "/placeholder.svg"}
-                      attendees={event.event_attendees?.length || 0}
-                      isOfficial={event.is_official}
-                      onClick={() => navigate(`/events/${event.id}`)}
-                    />
-                  ))}
-                  {communityEvents?.filter(event => event.approval_status === 'approved').length === 0 && (
-                    <p className="col-span-full text-center text-gray-500 py-8">
-                      No approved community events posted yet.
-                    </p>
-                  )}
-                </div>
+            <div>
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold mb-4">Community Events</h2>
+                <Alert variant="info" className="mb-6">
+                  <InfoIcon className="h-4 w-4" />
+                  <AlertDescription>
+                    Community events are created by members and subject to approval. 
+                    These events are not officially organized by South Manchester Social Stuff.
+                  </AlertDescription>
+                </Alert>
               </div>
+              <EventSection
+                title="Community Events"
+                events={communityEvents?.filter(event => event.approval_status === 'approved') || []}
+                emptyMessage="No approved community events posted yet."
+              />
             </div>
-          )}
+          </div>
         </div>
       </div>
     </div>
