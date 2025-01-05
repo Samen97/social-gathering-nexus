@@ -18,22 +18,15 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route 
-          path="/" 
-          element={session ? <Index /> : <Navigate to="/auth" replace />} 
-        />
-        <Route 
-          path="/about" 
-          element={session ? <About /> : <Navigate to="/auth" replace />} 
-        />
-        <Route 
-          path="/events" 
-          element={session ? <Events /> : <Navigate to="/auth" replace />} 
-        />
-        <Route 
-          path="/events/:id" 
-          element={session ? <EventDetail /> : <Navigate to="/auth" replace />} 
-        />
+        {/* Public routes */}
+        <Route path="/" element={<Index />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/events/:id" element={<EventDetail />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+
+        {/* Protected routes - require authentication */}
         <Route 
           path="/events/create" 
           element={session ? <CreateEvent /> : <Navigate to="/auth" replace />} 
@@ -42,8 +35,6 @@ function App() {
           path="/notices/*" 
           element={session ? <Notices /> : <Navigate to="/auth" replace />} 
         />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
           path="/admin" 
           element={session ? <AdminDashboard /> : <Navigate to="/auth" replace />} 
