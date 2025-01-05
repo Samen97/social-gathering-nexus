@@ -25,9 +25,9 @@ export const PendingEventSection = ({ events, onEventUpdate }: PendingEventSecti
   if (!events || events.length === 0) return null;
 
   return (
-    <div>
+    <div className="w-full">
       <h2 className="text-2xl font-semibold mb-6 text-orange-600">Pending Approval</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-fr">
         {events.map((event) => (
           <div key={event.id} className="relative">
             <EventCard
