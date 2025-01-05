@@ -12,32 +12,6 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // First check URL search parameters for recovery token
-    const searchParams = new URLSearchParams(window.location.search);
-    const token = searchParams.get("token");
-    const type = searchParams.get("type");
-
-    if (type === "recovery" && token) {
-      console.log("Password recovery flow detected from URL params, redirecting to reset page");
-      navigate("/password-reset", { 
-        state: { token, type }
-      });
-      return;
-    }
-
-    // Then check hash parameters (for backward compatibility)
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const hashToken = hashParams.get("access_token");
-    const hashType = hashParams.get("type");
-    
-    if (hashType === "recovery" && hashToken) {
-      console.log("Password recovery flow detected from hash params, redirecting to reset page");
-      navigate("/password-reset", { 
-        state: { token: hashToken, type: hashType }
-      });
-      return;
-    }
-
     // Check for existing session
     if (session) {
       console.log("Existing session found, redirecting to home");
