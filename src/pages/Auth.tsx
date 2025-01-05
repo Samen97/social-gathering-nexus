@@ -58,6 +58,11 @@ const Auth = () => {
             Welcome to South Manchester Social Stuff
           </h1>
           <SupabaseAuth
+            supabaseClient={supabase}
+            view="sign_in"
+            showLinks={true}
+            redirectTo={`${window.location.origin}/auth/callback`}
+            providers={[]}
             appearance={{
               theme: ThemeSupa,
               variables: {
@@ -68,12 +73,27 @@ const Auth = () => {
                   },
                 },
               },
+              className: {
+                container: 'w-full',
+                label: 'text-sm font-medium text-gray-700',
+                button: 'w-full px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-md',
+                input: 'w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50',
+                message: 'text-sm text-red-500',
+              },
             }}
-            supabaseClient={supabase}
-            view="sign_in"
-            showLinks={true}
-            redirectTo={`${window.location.origin}/auth/callback`}
-            providers={[]}
+            localization={{
+              variables: {
+                sign_up: {
+                  full_name_label: 'Full Name',
+                  full_name_placeholder: 'Enter your full name',
+                },
+              },
+            }}
+            additionalData={{
+              full_name: {
+                required: true,
+              },
+            }}
           />
         </div>
       </div>
