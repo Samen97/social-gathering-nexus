@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const COMMUNITY_STATS = [
   { icon: Calendar, label: "Events Hosted", value: "150+" },
-  { icon: Users, label: "Active Members", value: "500+" },
+  { icon: Users, label: "Active Members", value: "900+" },
   { icon: MapPin, label: "Locations", value: "25+" },
   { icon: Heart, label: "Connections Made", value: "1000+" },
 ];
