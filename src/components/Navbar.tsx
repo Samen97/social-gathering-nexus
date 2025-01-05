@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Menu } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useEffect } from "react";
 
 export const Navbar = () => {
   const location = useLocation();
@@ -26,26 +27,36 @@ export const Navbar = () => {
     enabled: !!session?.user,
   });
 
+  // Listen for auth state changes
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        navigate('/auth');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+
   const isActive = (path: string) => location.pathname === path;
 
   const handleSignOut = async () => {
     try {
-      // First clear local storage and session
+      // Clear all local storage and session data
       localStorage.clear();
-      await supabase.auth.setSession(null);
+      sessionStorage.clear();
       
-      // Then attempt to sign out
+      // Sign out from Supabase
       const { error } = await supabase.auth.signOut();
-      
-      // Redirect to auth page regardless of error
-      navigate("/auth");
       
       if (error) {
         console.error("Sign out error:", error);
-        // If there's an error but we've cleared the session, still treat it as a successful sign out
         toast({
-          title: "Signed out",
-          description: "Your session has been cleared",
+          title: "Error signing out",
+          description: "Please try again",
+          variant: "destructive",
           duration: 2000,
         });
       } else {
@@ -53,14 +64,15 @@ export const Navbar = () => {
           title: "Signed out successfully",
           duration: 2000,
         });
+        // Force navigation to auth page
+        window.location.href = '/auth';
       }
     } catch (error) {
       console.error("Sign out error:", error);
-      // Ensure user is redirected and session is cleared even if there's an error
-      navigate("/auth");
       toast({
-        title: "Signed out",
-        description: "Your session has been cleared",
+        title: "Error signing out",
+        description: "Please try again",
+        variant: "destructive",
         duration: 2000,
       });
     }
