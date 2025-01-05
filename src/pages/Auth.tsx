@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -72,6 +72,12 @@ const Auth = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            options={{
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              metaData: {
+                required: ["full_name"],
+              },
+            }}
           />
         </div>
       </div>
