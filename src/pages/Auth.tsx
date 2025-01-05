@@ -81,6 +81,16 @@ const Auth = () => {
                 }
               }
             }}
+            customFields={[
+              {
+                key: 'full_name',
+                name: 'full_name',
+                type: 'text',
+                label: 'Full Name',
+                placeholder: 'Your full name',
+                required: true,
+              }
+            ]}
           />
         </div>
       </div>
