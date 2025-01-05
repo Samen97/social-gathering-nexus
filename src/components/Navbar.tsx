@@ -30,21 +30,22 @@ export const Navbar = () => {
 
   const handleSignOut = async () => {
     try {
-      // First clear any existing session data locally
+      // First clear local storage and session
+      localStorage.clear();
       await supabase.auth.setSession(null);
       
-      // Then attempt to sign out from Supabase
+      // Then attempt to sign out
       const { error } = await supabase.auth.signOut();
       
-      // Even if there's an error, we want to redirect and clear local state
+      // Redirect to auth page regardless of error
       navigate("/auth");
       
-      // Show appropriate message based on whether there was an error
       if (error) {
         console.error("Sign out error:", error);
+        // If there's an error but we've cleared the session, still treat it as a successful sign out
         toast({
-          title: "Session ended",
-          description: "You have been signed out",
+          title: "Signed out",
+          description: "Your session has been cleared",
           duration: 2000,
         });
       } else {
@@ -55,11 +56,11 @@ export const Navbar = () => {
       }
     } catch (error) {
       console.error("Sign out error:", error);
-      // Ensure user is redirected to auth page even if there's an error
+      // Ensure user is redirected and session is cleared even if there's an error
       navigate("/auth");
       toast({
-        title: "Session ended",
-        description: "You have been signed out",
+        title: "Signed out",
+        description: "Your session has been cleared",
         duration: 2000,
       });
     }
