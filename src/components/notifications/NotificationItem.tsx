@@ -32,8 +32,23 @@ export const NotificationItem = ({
   const handleClick = async () => {
     console.log("Notification clicked:", { type, title, reference_id });
     
+    if (is_read) {
+      // If already read, just navigate
+      if (reference_id) {
+        if (type.includes('event')) {
+          navigate(`/events/${reference_id}`);
+        } else if (type.includes('notice')) {
+          navigate(`/notices/${reference_id}`);
+        }
+        if (onClose) {
+          onClose();
+        }
+      }
+      return;
+    }
+
     try {
-      // Mark notification as read
+      // Mark notification as read in the database
       const { error } = await supabase
         .from('notifications')
         .update({ is_read: true })
@@ -44,8 +59,15 @@ export const NotificationItem = ({
         return;
       }
 
-      // Invalidate notifications query to trigger a refetch
-      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+      // Update the cache directly instead of invalidating
+      queryClient.setQueryData(["notifications"], (oldData: any) => {
+        if (!oldData) return [];
+        return oldData.map((notification: any) =>
+          notification.id === id
+            ? { ...notification, is_read: true }
+            : notification
+        );
+      });
 
       // Navigate to the referenced item if available
       if (reference_id) {
