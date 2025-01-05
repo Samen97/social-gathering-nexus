@@ -10,9 +10,22 @@ const Auth = () => {
   const session = useSession();
 
   useEffect(() => {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        navigate('/');
+      }
+    });
+
+    // Check for existing session
     if (session) {
-      navigate("/");
+      navigate('/');
     }
+
+    // Cleanup subscription
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [session, navigate]);
 
   return (
@@ -36,7 +49,7 @@ const Auth = () => {
               },
             }}
             providers={["google"]}
-            redirectTo={window.location.origin}
+            redirectTo={`${window.location.origin}/auth/callback`}
           />
         </div>
       </div>
