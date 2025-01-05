@@ -27,6 +27,7 @@ interface Notice {
   date: string;
   created_by: string;
   created_at: string;
+  is_pinned: boolean;
   profiles: {
     full_name: string | null;
   };
@@ -65,6 +66,22 @@ export const NoticeDetail = () => {
     },
   });
 
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin", session?.user?.id],
+    queryFn: async () => {
+      if (!session?.user?.id) return false;
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id)
+        .eq("role", "admin")
+        .single();
+      
+      if (error) return false;
+      return !!data;
+    },
+  });
+
   const deleteNoticeMutation = useMutation({
     mutationFn: async () => {
       const { error } = await supabase
@@ -80,6 +97,24 @@ export const NoticeDetail = () => {
     onError: (error) => {
       console.error("Error deleting notice:", error);
       toast.error("Failed to delete notice");
+    },
+  });
+
+  const togglePinMutation = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("notices")
+        .update({ is_pinned: !notice?.is_pinned })
+        .eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notice", id] });
+      toast.success(notice?.is_pinned ? "Notice unpinned" : "Notice pinned");
+    },
+    onError: (error) => {
+      console.error("Error toggling pin status:", error);
+      toast.error("Failed to update notice pin status");
     },
   });
 
@@ -162,7 +197,10 @@ export const NoticeDetail = () => {
               day: "numeric",
             })}
             canDelete={session?.user?.id === notice.created_by}
+            isPinned={notice.is_pinned}
+            canPin={isAdmin}
             onDeleteClick={() => setDeleteDialogOpen(true)}
+            onPinClick={() => togglePinMutation.mutate()}
           />
 
           <NoticeComments
