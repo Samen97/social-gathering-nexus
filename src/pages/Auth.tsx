@@ -73,16 +73,19 @@ const Auth = () => {
             localization={{
               variables: {
                 sign_up: {
-                  full_name_label: 'Full Name',
-                  full_name_placeholder: 'Enter your full name',
+                  button_label: "Sign up",
+                  email_label: "Email",
+                  password_label: "Password",
+                  email_input_placeholder: "Your email address",
+                  password_input_placeholder: "Your password"
                 }
               }
             }}
-            additionalData={{
-              full_name: {
-                required: true,
-                label: 'Full Name',
-              },
+            options={{
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              data: {
+                full_name: undefined
+              }
             }}
           />
         </div>
