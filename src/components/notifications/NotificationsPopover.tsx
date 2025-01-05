@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Popover,
@@ -13,23 +13,62 @@ import { useSession } from "@supabase/auth-helpers-react";
 
 export const NotificationsPopover = () => {
   const session = useSession();
+  const queryClient = useQueryClient();
 
-  const { data: notifications = [] } = useQuery({
+  const { data: notifications = [], isLoading } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
+      console.log("Fetching notifications for user:", session?.user?.id);
       const { data, error } = await supabase
         .from("notifications")
         .select("*")
+        .eq('user_id', session?.user?.id)
         .order("created_at", { ascending: false })
         .limit(10);
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error("Error fetching notifications:", error);
+        throw error;
+      }
+      
+      console.log("Fetched notifications:", data);
+      return data || [];
     },
-    enabled: !!session,
+    enabled: !!session?.user?.id,
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
+  const markAsReadMutation = useMutation({
+    mutationFn: async (notificationId: string) => {
+      const { error } = await supabase
+        .from("notifications")
+        .update({ is_read: true })
+        .eq("id", notificationId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+
+  const handleNotificationClick = async (notificationId: string) => {
+    try {
+      await markAsReadMutation.mutate(notificationId);
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+    }
+  };
+
   const unreadCount = notifications.filter((n) => !n.is_read).length;
+
+  if (isLoading) {
+    return (
+      <Button variant="ghost" size="icon" className="relative">
+        <Bell className="h-5 w-5" />
+      </Button>
+    );
+  }
 
   return (
     <Popover>
@@ -56,6 +95,7 @@ export const NotificationsPopover = () => {
               <NotificationItem
                 key={notification.id}
                 {...notification}
+                onClose={() => handleNotificationClick(notification.id)}
               />
             ))
           ) : (

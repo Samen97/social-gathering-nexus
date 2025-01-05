@@ -26,6 +26,7 @@ export const NotificationItem = ({
   const navigate = useNavigate();
 
   const handleClick = () => {
+    console.log("Notification clicked:", { type, title, reference_id });
     if (reference_id) {
       if (type.includes('event')) {
         navigate(`/events/${reference_id}`);
