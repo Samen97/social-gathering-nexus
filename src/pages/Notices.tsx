@@ -9,7 +9,7 @@ const Notices = () => {
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <Routes>
-          <Route index element={<NoticeBoard />} />
+          <Route path="/" element={<NoticeBoard />} />
           <Route path=":id" element={<NoticeDetail />} />
         </Routes>
       </main>
