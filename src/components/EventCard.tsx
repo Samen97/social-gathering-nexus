@@ -11,6 +11,7 @@ interface EventCardProps {
   attendees: number;
   isOfficial?: boolean;
   onClick?: () => void;
+  onDelete?: () => void;
 }
 
 export const EventCard = ({
@@ -22,13 +23,20 @@ export const EventCard = ({
   attendees,
   isOfficial,
   onClick,
+  onDelete,
 }: EventCardProps) => {
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDelete?.();
+  };
+
   return (
     <div 
       className={cn(
-        "bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-[1.02] animate-fade-in",
+        "bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-[1.02] animate-fade-in cursor-pointer",
         isOfficial && "ring-2 ring-primary ring-offset-2"
       )}
+      onClick={onClick}
     >
       <div
         className="h-48 bg-cover bg-center"
@@ -54,9 +62,20 @@ export const EventCard = ({
           <span className="text-sm">{attendees} attending</span>
         </div>
         <p className="text-gray-600 mb-4 line-clamp-2">{description}</p>
-        <Button className="w-full" onClick={onClick}>
-          View Details
-        </Button>
+        <div className="flex gap-2">
+          <Button className="flex-1" onClick={onClick}>
+            View Details
+          </Button>
+          {onDelete && (
+            <Button 
+              variant="destructive" 
+              className="px-3"
+              onClick={handleDelete}
+            >
+              Delete
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );

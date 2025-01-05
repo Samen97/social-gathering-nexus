@@ -18,9 +18,16 @@ interface EventSectionProps {
   events: Event[];
   emptyMessage: string;
   showAdminActions?: boolean;
+  onEventDelete?: (eventId: string) => void;
 }
 
-export const EventSection = ({ title, events, emptyMessage, showAdminActions }: EventSectionProps) => {
+export const EventSection = ({ 
+  title, 
+  events, 
+  emptyMessage, 
+  showAdminActions,
+  onEventDelete 
+}: EventSectionProps) => {
   const navigate = useNavigate();
 
   return (
@@ -45,6 +52,7 @@ export const EventSection = ({ title, events, emptyMessage, showAdminActions }: 
             attendees={event.event_attendees?.length || 0}
             isOfficial={event.is_official}
             onClick={() => navigate(`/events/${event.id}`)}
+            onDelete={onEventDelete ? () => onEventDelete(event.id) : undefined}
           />
         ))}
         {events?.length === 0 && (

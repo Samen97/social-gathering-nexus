@@ -16,6 +16,7 @@ const Events = () => {
   const session = useSession();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const [localEvents, setLocalEvents] = useState<any[]>([]);
 
   const { data: isAdmin } = useQuery({
     queryKey: ["isAdmin"],
@@ -48,11 +49,18 @@ const Events = () => {
       if (error) throw error;
       return data;
     },
+    onSuccess: (data) => {
+      setLocalEvents(data || []);
+    },
   });
 
-  const officialEvents = events?.filter((event) => event.is_official);
-  const communityEvents = events?.filter((event) => !event.is_official);
-  const pendingEvents = events?.filter((event) => !event.is_official && event.approval_status === 'pending');
+  const handleEventDelete = (eventId: string) => {
+    setLocalEvents((prev) => prev.filter((event) => event.id !== eventId));
+  };
+
+  const officialEvents = localEvents?.filter((event) => event.is_official);
+  const communityEvents = localEvents?.filter((event) => !event.is_official);
+  const pendingEvents = localEvents?.filter((event) => !event.is_official && event.approval_status === 'pending');
 
   if (isLoading) {
     return (
@@ -83,7 +91,7 @@ const Events = () => {
 
         <div className="space-y-8">
           <EventCalendar
-            events={events || []}
+            events={localEvents || []}
             onDateSelect={setSelectedDate}
             selectedDate={selectedDate}
           />
@@ -95,6 +103,7 @@ const Events = () => {
               title="Official Events"
               events={officialEvents || []}
               emptyMessage="No official events scheduled."
+              onEventDelete={handleEventDelete}
             />
 
             <div>
@@ -112,6 +121,7 @@ const Events = () => {
                 title="Community Events"
                 events={communityEvents?.filter(event => event.approval_status === 'approved') || []}
                 emptyMessage="No approved community events posted yet."
+                onEventDelete={handleEventDelete}
               />
             </div>
           </div>
