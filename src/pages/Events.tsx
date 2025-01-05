@@ -54,10 +54,12 @@ const Events = () => {
       console.log("Fetched events:", data);
       return data;
     },
-    onSuccess: (data) => {
-      console.log("Setting local events:", data);
-      setLocalEvents(data || []);
-    },
+    meta: {
+      onSuccess: (data: any) => {
+        console.log("Setting local events:", data);
+        setLocalEvents(data || []);
+      }
+    }
   });
 
   const handleEventDelete = (eventId: string) => {
