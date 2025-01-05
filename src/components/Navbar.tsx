@@ -1,19 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
-  const navigate = useNavigate();
-
-  const { data: session } = useQuery({
-    queryKey: ["session"],
-    queryFn: async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session;
-    },
-  });
+  const location = useLocation();
+  const session = useSession();
 
   const { data: isAdmin } = useQuery({
     queryKey: ["isAdmin"],
@@ -28,43 +21,61 @@ export const Navbar = () => {
     enabled: !!session?.user,
   });
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   return (
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
             <Link to="/" className="text-xl font-bold text-primary">
-              South Manchester Social
+              SMSS
             </Link>
             <div className="hidden md:flex items-center space-x-4">
-              <Link to="/events" className="text-gray-600 hover:text-gray-900">
-                Events
+              <Link to="/events">
+                <Button
+                  variant={isActive("/events") ? "default" : "ghost"}
+                >
+                  Events
+                </Button>
               </Link>
-              <Link to="/notices" className="text-gray-600 hover:text-gray-900">
-                Notices
+              <Link to="/notices">
+                <Button
+                  variant={isActive("/notices") ? "default" : "ghost"}
+                >
+                  Notices
+                </Button>
               </Link>
-              <Link to="/about" className="text-gray-600 hover:text-gray-900">
-                About
+              <Link to="/about">
+                <Button
+                  variant={isActive("/about") ? "default" : "ghost"}
+                >
+                  About
+                </Button>
               </Link>
               {isAdmin && (
-                <Link to="/admin" className="text-orange-600 hover:text-orange-700 font-medium">
-                  Admin
+                <Link to="/admin">
+                  <Button
+                    variant={isActive("/admin") ? "default" : "ghost"}
+                  >
+                    Admin
+                  </Button>
                 </Link>
               )}
             </div>
           </div>
-          <div>
+          <div className="flex items-center space-x-4">
             {session ? (
-              <Button variant="outline" onClick={handleSignOut}>
+              <Button
+                variant="ghost"
+                onClick={() => supabase.auth.signOut()}
+              >
                 Sign Out
               </Button>
             ) : (
-              <Button onClick={() => navigate("/auth")}>Sign In</Button>
+              <Link to="/auth">
+                <Button>Sign In</Button>
+              </Link>
             )}
           </div>
         </div>

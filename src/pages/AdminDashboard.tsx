@@ -1,27 +1,29 @@
+import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PendingEventSection } from "@/components/event/PendingEventSection";
-import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const AdminDashboard = () => {
+  const session = useSession();
   const navigate = useNavigate();
 
-  // Check if user is admin
   const { data: isAdmin, isLoading: isCheckingAdmin } = useQuery({
     queryKey: ["isAdmin"],
     queryFn: async () => {
+      if (!session?.user) return false;
       const { data, error } = await supabase.rpc('is_admin', {
-        input_user_id: (await supabase.auth.getSession()).data.session?.user.id
+        input_user_id: session.user.id
       });
       if (error) throw error;
       return data;
     },
+    enabled: !!session?.user,
   });
 
-  // Fetch pending events
   const { data: pendingEvents } = useQuery({
     queryKey: ["pendingEvents"],
     queryFn: async () => {
@@ -30,15 +32,12 @@ const AdminDashboard = () => {
         .select(`
           *,
           event_attendees (
-            status,
-            user_id
-          ),
-          profiles (
-            full_name
+            user_id,
+            status
           )
         `)
-        .eq('approval_status', 'pending')
-        .order('created_at', { ascending: false });
+        .eq("approval_status", "pending")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
@@ -46,15 +45,24 @@ const AdminDashboard = () => {
     enabled: !!isAdmin,
   });
 
-  // Redirect non-admin users
   useEffect(() => {
     if (!isCheckingAdmin && !isAdmin) {
-      navigate('/');
+      navigate("/");
     }
   }, [isAdmin, isCheckingAdmin, navigate]);
 
   if (isCheckingAdmin) {
-    return <div>Loading...</div>;
+    return (
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded w-1/4" />
+            <div className="h-32 bg-gray-200 rounded" />
+          </div>
+        </div>
+      </>
+    );
   }
 
   if (!isAdmin) {
@@ -62,7 +70,7 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-accent to-white">
+    <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
@@ -78,13 +86,11 @@ const AdminDashboard = () => {
           </TabsContent>
 
           <TabsContent value="all-events">
-            <div className="text-gray-500">
-              All events management coming soon...
-            </div>
+            <p className="text-gray-500">Coming soon...</p>
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </>
   );
 };
 
