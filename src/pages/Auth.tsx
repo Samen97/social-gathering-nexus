@@ -90,7 +90,7 @@ const Auth = () => {
               },
             }}
             providers={[]}
-            redirectTo={`${window.location.origin}/auth/callback`}
+            redirectTo="https://preview--social-gathering-nexus.lovable.app/auth/callback"
           />
         </div>
       </div>
