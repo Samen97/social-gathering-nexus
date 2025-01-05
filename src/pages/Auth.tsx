@@ -12,7 +12,16 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check for existing session first
+    // Check URL parameters for recovery flow
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const type = hashParams.get("type");
+    
+    if (type === "recovery") {
+      navigate("/password-reset");
+      return;
+    }
+
+    // Check for existing session
     if (session) {
       console.log("Existing session found, redirecting to home");
       navigate('/');
@@ -36,11 +45,7 @@ const Auth = () => {
         });
       } else if (event === 'PASSWORD_RECOVERY') {
         console.log("Password recovery requested");
-        toast({
-          title: "Password Recovery",
-          description: "Please check your email for reset instructions",
-          duration: 5000,
-        });
+        navigate('/password-reset');
       }
     });
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const PasswordReset = () => {
   const [newPassword, setNewPassword] = useState("");
@@ -15,7 +15,6 @@ const PasswordReset = () => {
     // Check if we're in a password reset flow
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     const accessToken = hashParams.get("access_token");
-    const refreshToken = hashParams.get("refresh_token");
     const type = hashParams.get("type");
 
     if (type === "recovery" && accessToken) {
@@ -43,6 +42,7 @@ const PasswordReset = () => {
         duration: 5000,
       });
 
+      // After successful password reset, redirect to auth page
       navigate("/auth");
     } catch (error: any) {
       toast({
