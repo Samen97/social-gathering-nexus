@@ -13,33 +13,46 @@ const PasswordReset = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if we're in a password reset flow
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get("access_token") || 
-                       (location.state && location.state.accessToken);
-    const type = hashParams.get("type") || 
-                 (location.state && location.state.type);
+    // First check URL parameters
+    const searchParams = new URLSearchParams(window.location.search);
+    const urlToken = searchParams.get("token");
+    const urlType = searchParams.get("type");
 
-    if (type === "recovery" && accessToken) {
+    // Then check state from navigation
+    const stateToken = location.state?.token;
+    const stateType = location.state?.type;
+
+    // Finally check hash parameters
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const hashToken = hashParams.get("access_token");
+    const hashType = hashParams.get("type");
+
+    const token = urlToken || stateToken || hashToken;
+    const type = urlType || stateType || hashType;
+
+    if (type === "recovery" && token) {
       console.log("Password reset flow detected with token");
       // Set the session with the access token
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (!session) {
-          // If no session, try to set it using the access token
-          supabase.auth.setSession({
-            access_token: accessToken,
-            refresh_token: '',
-          }).catch((error) => {
-            console.error("Error setting session:", error);
-            navigate("/auth");
+      supabase.auth.verifyOtp({
+        token,
+        type: "recovery"
+      }).then(({ data, error }) => {
+        if (error) {
+          console.error("Error verifying token:", error);
+          toast({
+            title: "Error verifying reset token",
+            description: error.message,
+            variant: "destructive",
+            duration: 5000,
           });
+          navigate("/auth");
         }
       });
     } else {
       console.log("No valid password reset flow detected, redirecting to auth");
       navigate("/auth");
     }
-  }, [navigate, location]);
+  }, [navigate, location, toast]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
