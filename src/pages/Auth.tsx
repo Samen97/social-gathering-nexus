@@ -22,8 +22,6 @@ const Auth = () => {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
-      
       if (event === 'SIGNED_IN' && session) {
         toast({
           title: "Successfully signed in",
@@ -68,6 +66,7 @@ const Auth = () => {
             redirectTo={`${window.location.origin}/auth/callback`}
             magicLink={false}
             showLinks={true}
+            view="sign_up"
             additionalData={{
               full_name: {
                 required: true,
