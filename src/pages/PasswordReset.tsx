@@ -30,20 +30,26 @@ const PasswordReset = () => {
     setLoading(true);
 
     try {
-      // Get the token from the URL
       const token = searchParams.get('token');
-      const type = searchParams.get('type');
-
-      if (!token || !type) {
+      
+      if (!token) {
         throw new Error("Invalid reset link parameters");
       }
 
-      // Update the user's password using the token
-      const { error } = await supabase.auth.updateUser({
+      // First set the session with the recovery token
+      const { error: sessionError } = await supabase.auth.verifyOtp({
+        token_hash: token,
+        type: 'recovery'
+      });
+
+      if (sessionError) throw sessionError;
+
+      // Then update the user's password
+      const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword
       });
 
-      if (error) throw error;
+      if (updateError) throw updateError;
 
       toast({
         title: "Password updated successfully",
@@ -54,6 +60,7 @@ const PasswordReset = () => {
       // After successful password reset, redirect to auth page
       navigate("/auth");
     } catch (error: any) {
+      console.error('Password reset error:', error);
       toast({
         title: "Error updating password",
         description: error.message,
