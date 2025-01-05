@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useSession } from "@supabase/auth-helpers-react";
@@ -10,8 +10,16 @@ const Auth = () => {
   const navigate = useNavigate();
   const session = useSession();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    // Check if we're in a password reset flow
+    const token = searchParams.get('token');
+    if (token) {
+      navigate(`/password-reset?token=${token}`);
+      return;
+    }
+
     // Check for existing session
     if (session) {
       console.log("Existing session found, redirecting to home");
@@ -34,16 +42,13 @@ const Auth = () => {
           title: "Signed out",
           duration: 2000,
         });
-      } else if (event === 'PASSWORD_RECOVERY') {
-        console.log("Password recovery requested");
-        navigate('/password-reset');
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [session, navigate, toast]);
+  }, [session, navigate, toast, searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white py-12">

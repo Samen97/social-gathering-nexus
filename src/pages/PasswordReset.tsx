@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,20 @@ const PasswordReset = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const token = searchParams.get('token');
+    if (!token) {
+      toast({
+        title: "Invalid reset link",
+        description: "Please request a new password reset link",
+        variant: "destructive",
+        duration: 5000,
+      });
+      navigate('/auth');
+    }
+  }, [searchParams, navigate, toast]);
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
