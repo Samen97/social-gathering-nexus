@@ -74,6 +74,17 @@ const Auth = () => {
             view="sign_up"
             showLinks={true}
             redirectTo={`${window.location.origin}/auth/callback`}
+            localization={{
+              variables: {
+                sign_up: {
+                  full_name_label: 'Full Name',
+                  full_name_placeholder: 'Enter your full name',
+                }
+              }
+            }}
+            additionalData={{
+              full_name: true
+            }}
           />
         </div>
       </div>
