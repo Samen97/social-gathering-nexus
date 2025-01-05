@@ -8,12 +8,14 @@ import CreateEvent from "@/pages/CreateEvent";
 import Notices from "@/pages/Notices";
 import Auth from "@/pages/Auth";
 import AdminDashboard from "@/pages/AdminDashboard";
+import { Navbar } from "@/components/Navbar";
 
 function App() {
   const session = useSession();
 
   return (
     <Router>
+      <Navbar />
       <Routes>
         <Route 
           path="/" 
