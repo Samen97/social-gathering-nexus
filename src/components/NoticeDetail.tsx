@@ -103,6 +103,24 @@ export const NoticeDetail = () => {
     },
   });
 
+  const deleteCommentMutation = useMutation({
+    mutationFn: async (commentId: string) => {
+      const { error } = await supabase
+        .from("notice_comments")
+        .delete()
+        .eq("id", commentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notice", id] });
+      toast.success("Comment deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Error deleting comment:", error);
+      toast.error("Failed to delete comment");
+    },
+  });
+
   if (isLoading) {
     return <div className="animate-pulse bg-white rounded-lg h-48" />;
   }
@@ -130,6 +148,7 @@ export const NoticeDetail = () => {
         <NoticeComments
           comments={notice.notice_comments}
           onAddComment={(content) => addCommentMutation.mutate(content)}
+          onDeleteComment={(commentId) => deleteCommentMutation.mutate(commentId)}
           isAddingComment={addCommentMutation.isPending}
         />
 
