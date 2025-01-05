@@ -1,12 +1,15 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 export const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const session = useSession();
+  const { toast } = useToast();
 
   const { data: isAdmin } = useQuery({
     queryKey: ["isAdmin"],
@@ -23,8 +26,25 @@ export const Navbar = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Signed out successfully",
+        duration: 2000,
+      });
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error signing out",
+        description: "Please try again",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-8">
@@ -68,13 +88,13 @@ export const Navbar = () => {
             {session ? (
               <Button
                 variant="ghost"
-                onClick={() => supabase.auth.signOut()}
+                onClick={handleSignOut}
               >
                 Sign Out
               </Button>
             ) : (
               <Link to="/auth">
-                <Button>Sign In</Button>
+                <Button variant="default">Sign In</Button>
               </Link>
             )}
           </div>
