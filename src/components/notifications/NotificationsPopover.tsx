@@ -44,7 +44,7 @@ export const NotificationsPopover = () => {
     enabled: !!session?.user?.id,
     refetchInterval: 30000, // Reduced to 30 seconds to prevent frequent resets
     staleTime: 10000, // Keep data fresh for 10 seconds
-    cacheTime: 60000, // Cache for 1 minute
+    gcTime: 60000, // Changed from cacheTime to gcTime (garbage collection time)
   });
 
   const markAsReadMutation = useMutation({
