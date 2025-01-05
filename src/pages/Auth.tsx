@@ -77,6 +77,7 @@ const Auth = () => {
                 message: 'text-sm text-red-500',
               },
             }}
+            providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
           />
         </div>

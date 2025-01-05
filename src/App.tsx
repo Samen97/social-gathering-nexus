@@ -23,7 +23,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/events" element={<Events />} />
         <Route path="/events/:id" element={<EventDetail />} />
-        <Route path="/notices" element={<Notices />} />
+        <Route path="/notices/*" element={<Notices />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/password-reset" element={<PasswordReset />} />
 
