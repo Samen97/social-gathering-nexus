@@ -39,9 +39,9 @@ const About = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-600">
-                Getting involved is easy! Simply sign up, browse our upcoming events, and RSVP to anything 
-                that interests you. Whether you're looking to make new friends, explore the area, or just 
-                try something new, there's a place for you in our community.
+                Getting involved is easy! Simply sign up, browse our upcoming events, and RSVP to anything that catches your eye. For the full picture of who's attending, don't forget to check out our Meetup and Facebook pages—our community thrives across platforms, so the site might not always reflect the buzz happening elsewhere.
+                <br /><br />
+                But that's not all! You can also use our platform to post notices and connect with others for things like finding gym buddies, starting a hobby group, or sharing local tips. Whether you're here to make new friends, explore the area, or try something completely different, there's always a place for you in our vibrant community. Jump in and join the fun!
               </p>
             </CardContent>
           </Card>
