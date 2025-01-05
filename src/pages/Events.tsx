@@ -49,8 +49,10 @@ const Events = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      setLocalEvents(data || []);
+    meta: {
+      onSuccess: (data) => {
+        setLocalEvents(data || []);
+      },
     },
   });
 
