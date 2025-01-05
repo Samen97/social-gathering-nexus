@@ -16,6 +16,7 @@ import { useSession } from "@supabase/auth-helpers-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
 
 interface EventFormData {
   title: string;
@@ -30,6 +31,19 @@ export const EventForm = () => {
   const navigate = useNavigate();
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: async () => {
+      if (!session?.user) return false;
+      const { data, error } = await supabase.rpc('is_admin', {
+        input_user_id: session.user.id
+      });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user,
+  });
 
   const form = useForm<EventFormData>({
     defaultValues: {
@@ -49,9 +63,6 @@ export const EventForm = () => {
 
     setIsSubmitting(true);
     try {
-      // Check if the user is s.a.mccaddon@gmail.com to set is_official
-      const isOfficial = session.user.email === 's.a.mccaddon@gmail.com';
-
       const { error } = await supabase.from("events").insert({
         title: data.title,
         description: data.description,
@@ -60,8 +71,8 @@ export const EventForm = () => {
         image_url: imageUrl,
         max_attendees: data.maxAttendees || null,
         created_by: session.user.id,
-        is_official: isOfficial,
-        approval_status: isOfficial ? 'approved' : 'pending',
+        is_official: isAdmin,
+        approval_status: isAdmin ? 'approved' : 'pending',
       });
 
       if (error) throw error;
