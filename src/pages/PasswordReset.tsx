@@ -39,10 +39,8 @@ const PasswordReset = () => {
       }
 
       // Update the user's password using the token
-      const { error } = await supabase.auth.verifyOtp({
+      const { error } = await supabase.auth.resetPassword(newPassword, {
         token,
-        type: 'recovery',
-        newPassword: newPassword,
       });
 
       if (error) throw error;
