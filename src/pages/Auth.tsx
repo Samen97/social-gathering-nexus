@@ -24,6 +24,7 @@ const Auth = () => {
     if (session) {
       console.log("Existing session found, redirecting to home");
       navigate('/');
+      return; // Add return statement here
     }
 
     // Listen for auth state changes
@@ -72,6 +73,7 @@ const Auth = () => {
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
             magicLink={false}
+            view="sign_up"
             additionalData={{
               full_name: {
                 required: true,
