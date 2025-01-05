@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
@@ -11,11 +11,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 import { EventSection } from "@/components/event/EventSection";
 import { PendingEventSection } from "@/components/event/PendingEventSection";
+import { toast } from "sonner";
 
 const Events = () => {
   const session = useSession();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>();
+  const queryClient = useQueryClient();
 
   const { data: isAdmin } = useQuery({
     queryKey: ["isAdmin"],
@@ -55,10 +57,26 @@ const Events = () => {
     }
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (eventId: string) => {
+      const { error } = await supabase
+        .from("events")
+        .delete()
+        .eq("id", eventId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Event deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Delete error:", error);
+      toast.error("Failed to delete event");
+    },
+  });
+
   const handleEventDelete = (eventId: string) => {
-    // Filter out the deleted event from the local state
-    const updatedEvents = events.filter((event) => event.id !== eventId);
-    // No need to setLocalEvents since we're using the events directly from useQuery
+    deleteMutation.mutate(eventId);
   };
 
   const officialEvents = events?.filter((event) => event.is_official);
