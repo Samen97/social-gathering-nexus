@@ -34,6 +34,7 @@ const Events = () => {
   const { data: events, isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
+      console.log("Fetching events...");
       const { data, error } = await supabase
         .from("events")
         .select(`
@@ -46,13 +47,16 @@ const Events = () => {
         `)
         .order("date", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching events:", error);
+        throw error;
+      }
+      console.log("Fetched events:", data);
       return data;
     },
-    meta: {
-      onSuccess: (data) => {
-        setLocalEvents(data || []);
-      },
+    onSuccess: (data) => {
+      console.log("Setting local events:", data);
+      setLocalEvents(data || []);
     },
   });
 
@@ -61,7 +65,7 @@ const Events = () => {
   };
 
   const officialEvents = localEvents?.filter((event) => event.is_official);
-  const communityEvents = localEvents?.filter((event) => !event.is_official);
+  const communityEvents = localEvents?.filter((event) => !event.is_official && event.approval_status === 'approved');
   const pendingEvents = localEvents?.filter((event) => !event.is_official && event.approval_status === 'pending');
 
   if (isLoading) {
@@ -99,13 +103,15 @@ const Events = () => {
           />
 
           <div className="space-y-12">
-            {isAdmin && <PendingEventSection events={pendingEvents || []} />}
+            {isAdmin && pendingEvents && pendingEvents.length > 0 && (
+              <PendingEventSection events={pendingEvents} />
+            )}
 
             <EventSection
               title="Official Events"
               events={officialEvents || []}
               emptyMessage="No official events scheduled."
-              onEventDelete={handleEventDelete}
+              onEventDelete={isAdmin ? handleEventDelete : undefined}
             />
 
             <div>
@@ -121,7 +127,7 @@ const Events = () => {
               </div>
               <EventSection
                 title="Community Events"
-                events={communityEvents?.filter(event => event.approval_status === 'approved') || []}
+                events={communityEvents || []}
                 emptyMessage="No approved community events posted yet."
                 onEventDelete={handleEventDelete}
               />

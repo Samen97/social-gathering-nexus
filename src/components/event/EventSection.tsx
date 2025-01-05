@@ -30,11 +30,16 @@ export const EventSection = ({
 }: EventSectionProps) => {
   const navigate = useNavigate();
 
+  // Filter out events that are pending approval unless they're official
+  const filteredEvents = events?.filter(event => 
+    event.is_official || event.approval_status === 'approved'
+  );
+
   return (
     <div>
       <h2 className="text-2xl font-semibold mb-6 text-primary">{title}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {events?.map((event) => (
+        {filteredEvents?.map((event) => (
           <EventCard
             key={event.id}
             title={event.title}
@@ -55,7 +60,7 @@ export const EventSection = ({
             onDelete={onEventDelete ? () => onEventDelete(event.id) : undefined}
           />
         ))}
-        {events?.length === 0 && (
+        {filteredEvents?.length === 0 && (
           <p className="col-span-full text-center text-gray-500 py-8">
             {emptyMessage}
           </p>
