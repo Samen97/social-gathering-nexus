@@ -10,11 +10,25 @@ import { useNavigate } from "react-router-dom";
 import { EventCalendar } from "@/components/EventCalendar";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
+import { AdminEventActions } from "@/components/event/AdminEventActions";
 
 const Events = () => {
   const session = useSession();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState<Date>();
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["isAdmin"],
+    queryFn: async () => {
+      if (!session?.user) return false;
+      const { data, error } = await supabase.rpc('is_admin', {
+        user_id: session.user.id
+      });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user,
+  });
 
   const { data: events, isLoading } = useQuery({
     queryKey: ["events"],
@@ -38,6 +52,7 @@ const Events = () => {
 
   const officialEvents = events?.filter((event) => event.is_official);
   const communityEvents = events?.filter((event) => !event.is_official);
+  const pendingEvents = events?.filter((event) => !event.is_official && event.approval_status === 'pending');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
@@ -71,6 +86,42 @@ const Events = () => {
             </div>
           ) : (
             <div className="space-y-12">
+              {/* Admin Section - Pending Events */}
+              {isAdmin && pendingEvents && pendingEvents.length > 0 && (
+                <div>
+                  <h2 className="text-2xl font-semibold mb-6 text-orange-600">Pending Approval</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {pendingEvents.map((event) => (
+                      <div key={event.id} className="relative">
+                        <EventCard
+                          title={event.title}
+                          date={new Date(event.date).toLocaleDateString("en-US", {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "numeric",
+                          })}
+                          location={event.location}
+                          description={event.description || ""}
+                          imageUrl={event.image_url || "/placeholder.svg"}
+                          attendees={event.event_attendees?.length || 0}
+                          isOfficial={event.is_official}
+                          onClick={() => navigate(`/events/${event.id}`)}
+                        />
+                        <div className="absolute top-4 right-4">
+                          <AdminEventActions 
+                            eventId={event.id} 
+                            currentStatus={event.approval_status}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Official Events Section */}
               <div>
                 <h2 className="text-2xl font-semibold mb-6 text-primary">Official Events</h2>
@@ -116,7 +167,7 @@ const Events = () => {
                   </Alert>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {communityEvents?.map((event) => (
+                  {communityEvents?.filter(event => event.approval_status === 'approved').map((event) => (
                     <EventCard
                       key={event.id}
                       title={event.title}
@@ -136,9 +187,9 @@ const Events = () => {
                       onClick={() => navigate(`/events/${event.id}`)}
                     />
                   ))}
-                  {communityEvents?.length === 0 && (
+                  {communityEvents?.filter(event => event.approval_status === 'approved').length === 0 && (
                     <p className="col-span-full text-center text-gray-500 py-8">
-                      No community events posted yet.
+                      No approved community events posted yet.
                     </p>
                   )}
                 </div>
