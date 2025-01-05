@@ -13,8 +13,8 @@ interface NotificationItemProps {
   title: string;
   content: string;
   created_at: string;
-  is_read: boolean;
   reference_id?: string;
+  is_read?: boolean;
   onClose?: () => void;
 }
 
@@ -24,7 +24,6 @@ export const NotificationItem = ({
   title,
   content,
   created_at,
-  is_read,
   reference_id,
   onClose,
 }: NotificationItemProps) => {
@@ -72,30 +71,27 @@ export const NotificationItem = ({
     }
   };
 
-  const Icon = type.includes('event') ? Calendar : 
-               type.includes('comment') ? MessageSquare : Bell;
+  const NotificationIcon = type.includes('event') ? Calendar : type.includes('notice') ? MessageSquare : Bell;
 
   return (
     <div
       onClick={handleClick}
       className={cn(
-        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background transition-opacity duration-300 relative",
-        !is_read && "bg-accent",
-        is_read && "opacity-50"
+        "flex items-start gap-4 p-4 hover:bg-accent cursor-pointer bg-background transition-opacity duration-300 relative group"
       )}
     >
-      <Icon className="h-5 w-5 mt-1 text-primary" />
-      <div className="flex-1 space-y-1">
-        <p className="text-sm font-medium">{title}</p>
+      <NotificationIcon className="h-5 w-5 mt-1 text-primary" />
+      <div className="flex-1">
+        <p className="font-medium text-sm">{title}</p>
         <p className="text-sm text-muted-foreground">{content}</p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-muted-foreground mt-1">
           {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
         </p>
       </div>
       <Button
         variant="ghost"
         size="icon"
-        className="absolute top-2 right-2 h-6 w-6 hover:bg-destructive hover:text-destructive-foreground"
+        className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground"
         onClick={handleDelete}
       >
         <X className="h-4 w-4" />
