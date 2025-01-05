@@ -2,7 +2,8 @@ import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, Calendar, MessageSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface NotificationItemProps {
   id: string;
@@ -16,6 +17,7 @@ interface NotificationItemProps {
 }
 
 export const NotificationItem = ({
+  id,
   type,
   title,
   content,
@@ -25,18 +27,39 @@ export const NotificationItem = ({
   onClose,
 }: NotificationItemProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     console.log("Notification clicked:", { type, title, reference_id });
-    if (reference_id) {
-      if (type.includes('event')) {
-        navigate(`/events/${reference_id}`);
-      } else if (type.includes('notice')) {
-        navigate(`/notices/${reference_id}`);
+    
+    try {
+      // Mark notification as read
+      const { error } = await supabase
+        .from('notifications')
+        .update({ is_read: true })
+        .eq('id', id);
+
+      if (error) {
+        console.error("Error marking notification as read:", error);
+        return;
       }
-      if (onClose) {
-        onClose();
+
+      // Invalidate notifications query to trigger a refetch
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+
+      // Navigate to the referenced item if available
+      if (reference_id) {
+        if (type.includes('event')) {
+          navigate(`/events/${reference_id}`);
+        } else if (type.includes('notice')) {
+          navigate(`/notices/${reference_id}`);
+        }
+        if (onClose) {
+          onClose();
+        }
       }
+    } catch (error) {
+      console.error("Error handling notification click:", error);
     }
   };
 
