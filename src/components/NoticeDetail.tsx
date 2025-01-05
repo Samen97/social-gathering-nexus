@@ -15,6 +15,7 @@ interface Comment {
   content: string;
   created_at: string;
   created_by: string;
+  parent_id: string | null;
   profiles: {
     full_name: string | null;
   };
