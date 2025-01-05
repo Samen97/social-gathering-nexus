@@ -53,26 +53,6 @@ const Auth = () => {
       }
     });
 
-    // Test auth configuration
-    const testAuth = async () => {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        console.log("Auth configuration test:", { data, error });
-        if (error) {
-          toast({
-            title: "Authentication Error",
-            description: error.message,
-            variant: "destructive",
-            duration: 5000,
-          });
-        }
-      } catch (err) {
-        console.error("Auth test error:", err);
-      }
-    };
-
-    testAuth();
-
     return () => {
       subscription.unsubscribe();
     };

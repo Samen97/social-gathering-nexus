@@ -22,7 +22,19 @@ const PasswordReset = () => {
 
     if (type === "recovery" && accessToken) {
       console.log("Password reset flow detected with token");
-      // The access token is available, we can proceed with the reset
+      // Set the session with the access token
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (!session) {
+          // If no session, try to set it using the access token
+          supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: '',
+          }).catch((error) => {
+            console.error("Error setting session:", error);
+            navigate("/auth");
+          });
+        }
+      });
     } else {
       console.log("No valid password reset flow detected, redirecting to auth");
       navigate("/auth");
