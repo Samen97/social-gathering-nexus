@@ -1,7 +1,6 @@
 import { useSession } from "@supabase/auth-helpers-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Navbar } from "@/components/Navbar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PendingEventSection } from "@/components/event/PendingEventSection";
 import { useNavigate } from "react-router-dom";
@@ -53,15 +52,12 @@ const AdminDashboard = () => {
 
   if (isCheckingAdmin) {
     return (
-      <>
-        <Navbar />
-        <div className="container mx-auto px-4 py-8">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded w-1/4" />
-            <div className="h-32 bg-gray-200 rounded" />
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-1/4" />
+          <div className="h-32 bg-gray-200 rounded" />
         </div>
-      </>
+      </div>
     );
   }
 
@@ -70,27 +66,24 @@ const AdminDashboard = () => {
   }
 
   return (
-    <>
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-        
-        <Tabs defaultValue="pending-events" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="pending-events">Pending Events</TabsTrigger>
-            <TabsTrigger value="all-events">All Events</TabsTrigger>
-          </TabsList>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+      
+      <Tabs defaultValue="pending-events" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="pending-events">Pending Events</TabsTrigger>
+          <TabsTrigger value="all-events">All Events</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="pending-events">
-            <PendingEventSection events={pendingEvents || []} />
-          </TabsContent>
+        <TabsContent value="pending-events">
+          <PendingEventSection events={pendingEvents || []} />
+        </TabsContent>
 
-          <TabsContent value="all-events">
-            <p className="text-gray-500">Coming soon...</p>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </>
+        <TabsContent value="all-events">
+          <p className="text-gray-500">Coming soon...</p>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 };
 
