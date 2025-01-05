@@ -50,7 +50,6 @@ const AuthPage = () => {
               }
             }
           }}
-          providers={["google"]}
           redirectTo={window.location.origin}
           view="sign_in"
           showLinks={true}

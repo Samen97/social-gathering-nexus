@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Upload, Wand2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface ImageUploadProps {
   onImageSelected: (url: string) => void;
@@ -11,9 +10,6 @@ interface ImageUploadProps {
 
 export const ImageUpload = ({ onImageSelected }: ImageUploadProps) => {
   const [isUploading, setIsUploading] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [prompt, setPrompt] = useState("");
-  const [generationsLeft, setGenerationsLeft] = useState(3);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -44,61 +40,20 @@ export const ImageUpload = ({ onImageSelected }: ImageUploadProps) => {
     }
   };
 
-  const generateImage = async () => {
-    if (generationsLeft <= 0) {
-      toast.error("No more AI generations left");
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('generate-event-image', {
-        body: { prompt }
-      });
-
-      if (error) throw error;
-      onImageSelected(data.imageUrl);
-      setGenerationsLeft(prev => prev - 1);
-      toast.success("Image generated successfully!");
-    } catch (error) {
-      toast.error("Error generating image");
-      console.error(error);
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-4">
-        <Input
-          type="file"
-          accept="image/*"
-          onChange={handleFileUpload}
-          disabled={isUploading}
-        />
-        <div className="text-sm text-muted-foreground">
-          Or generate an image using AI ({generationsLeft} generations left)
+      <Input
+        type="file"
+        accept="image/*"
+        onChange={handleFileUpload}
+        disabled={isUploading}
+      />
+      {isUploading && (
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Uploading...
         </div>
-        <div className="flex gap-2">
-          <Input
-            placeholder="Describe the image you want to generate..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            disabled={isGenerating || generationsLeft <= 0}
-          />
-          <Button
-            onClick={generateImage}
-            disabled={!prompt || isGenerating || generationsLeft <= 0}
-          >
-            {isGenerating ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Wand2 className="h-4 w-4" />
-            )}
-          </Button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
