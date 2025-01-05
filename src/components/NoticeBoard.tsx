@@ -34,10 +34,14 @@ export const NoticeBoard = () => {
             full_name
           )
         `)
+        .eq('status', 'active') // Only show active notices
         .order("is_pinned", { ascending: false })
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching notices:", error);
+        throw error;
+      }
       return notices as Notice[];
     },
   });
