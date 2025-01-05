@@ -8,7 +8,6 @@ import { useSession } from "@supabase/auth-helpers-react";
 interface Notice {
   id: string;
   title: string;
-  description: string;
   created_at: string;
   profiles: {
     full_name: string | null;
@@ -25,7 +24,9 @@ export const NoticeBoard = () => {
       const { data: notices, error } = await supabase
         .from("notices")
         .select(`
-          *,
+          id,
+          title,
+          created_at,
           profiles (
             full_name
           )
@@ -57,23 +58,22 @@ export const NoticeBoard = () => {
         {notices?.map((notice) => (
           <div
             key={notice.id}
-            className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
             onClick={() => navigate(`/notices/${notice.id}`)}
+            className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
           >
-            <div className="space-y-2">
+            <div className="flex justify-between items-center">
               <h3 className="font-semibold text-lg">{notice.title}</h3>
-              <p className="text-gray-600 line-clamp-2">{notice.description}</p>
-              <div className="flex text-sm text-gray-500 space-x-4">
-                <span>Posted by {notice.profiles.full_name || "Anonymous"}</span>
-                <span>
-                  {new Date(notice.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </span>
+              <div className="text-sm text-gray-500">
+                {new Date(notice.created_at).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
               </div>
             </div>
+            <p className="text-sm text-gray-500 mt-1">
+              Posted by {notice.profiles.full_name || "Anonymous"}
+            </p>
           </div>
         ))}
         
