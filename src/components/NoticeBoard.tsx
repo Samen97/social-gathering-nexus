@@ -53,8 +53,10 @@ export const NoticeBoard = () => {
     return <div className="animate-pulse bg-white rounded-lg h-48" />;
   }
 
-  const pinnedNotices = notices?.filter((notice) => notice.is_pinned) || [];
-  const regularNotices = notices?.filter((notice) => !notice.is_pinned) || [];
+  // Ensure notices is an array before filtering
+  const safeNotices = Array.isArray(notices) ? notices : [];
+  const pinnedNotices = safeNotices.filter((notice) => notice.is_pinned);
+  const regularNotices = safeNotices.filter((notice) => !notice.is_pinned);
 
   console.log("Pinned notices:", pinnedNotices); // Debug log
   console.log("Regular notices:", regularNotices); // Debug log
@@ -78,7 +80,7 @@ export const NoticeBoard = () => {
       </CardHeader>
       <CardContent>
         <div className="text-sm text-gray-500 space-y-1">
-          <p>Posted by {notice.profiles.full_name || "Anonymous"}</p>
+          <p>Posted by {notice.profiles?.full_name || "Anonymous"}</p>
           <p>
             {new Date(notice.created_at).toLocaleDateString("en-US", {
               year: "numeric",
@@ -125,7 +127,7 @@ export const NoticeBoard = () => {
         </div>
       </div>
 
-      {(!notices || notices.length === 0) && (
+      {(!safeNotices || safeNotices.length === 0) && (
         <div className="col-span-full">
           <Card>
             <CardContent className="text-center py-6">
