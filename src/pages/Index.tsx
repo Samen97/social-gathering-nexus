@@ -3,6 +3,8 @@ import { EventCard } from "@/components/EventCard";
 import { Navbar } from "@/components/Navbar";
 import { Calendar, Users, MapPin, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const COMMUNITY_STATS = [
   { icon: Calendar, label: "Events Hosted", value: "150+" },
@@ -11,36 +13,27 @@ const COMMUNITY_STATS = [
   { icon: Heart, label: "Connections Made", value: "1000+" },
 ];
 
-const FEATURED_EVENTS = [
-  {
-    title: "South Manchester Book Club",
-    date: "Next Saturday at 3:00 PM",
-    location: "Didsbury Library",
-    description: "Join us for an engaging discussion of this month's book selection. All reading enthusiasts welcome!",
-    imageUrl: "/placeholder.svg",
-    attendees: 12,
-    isOfficial: true,
-  },
-  {
-    title: "Chorlton Coffee Morning",
-    date: "Every Tuesday at 10:00 AM",
-    location: "The Edge, Chorlton",
-    description: "Weekly casual coffee meetup. Come along for great conversations and even better coffee!",
-    imageUrl: "/placeholder.svg",
-    attendees: 8,
-  },
-  {
-    title: "Levenshulme Market Social",
-    date: "This Saturday at 11:00 AM",
-    location: "Levenshulme Market",
-    description: "Explore the market together and grab lunch from local vendors. Perfect for foodies and social butterflies!",
-    imageUrl: "/placeholder.svg",
-    attendees: 15,
-  },
-];
-
 const Index = () => {
   const navigate = useNavigate();
+
+  const { data: events } = useQuery({
+    queryKey: ["officialEvents"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events")
+        .select(`
+          *,
+          event_attendees(*)
+        `)
+        .eq('is_official', true)
+        .eq('approval_status', 'approved')
+        .order('date', { ascending: true })
+        .limit(3);
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white">
@@ -94,17 +87,39 @@ const Index = () => {
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Upcoming Events
+            Official Events
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Discover the latest events happening in South Manchester. From casual meetups
-            to organized activities, there's something for everyone.
+            Discover the latest official events happening in South Manchester. Join us
+            for these specially curated community gatherings.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {FEATURED_EVENTS.map((event) => (
-            <EventCard key={event.title} {...event} />
+          {events?.map((event) => (
+            <EventCard
+              key={event.id}
+              title={event.title}
+              date={new Date(event.date).toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "numeric",
+              })}
+              location={event.location}
+              description={event.description || ""}
+              imageUrl={event.image_url || "/placeholder.svg"}
+              attendees={event.event_attendees?.length || 0}
+              isOfficial={event.is_official}
+              onClick={() => navigate(`/events/${event.id}`)}
+            />
           ))}
+          {events?.length === 0 && (
+            <p className="col-span-full text-center text-gray-500 py-8">
+              No official events scheduled at the moment.
+            </p>
+          )}
         </div>
         <div className="text-center mt-12">
           <Button 
