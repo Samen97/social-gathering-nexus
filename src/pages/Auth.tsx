@@ -28,12 +28,6 @@ const Auth = () => {
           duration: 2000,
         });
       }
-      if (event === 'USER_UPDATED') {
-        console.log("User updated:", session);
-      }
-      if (event === 'TOKEN_REFRESHED') {
-        console.log("Token refreshed:", session);
-      }
     });
 
     // Check for existing session
@@ -69,7 +63,7 @@ const Auth = () => {
               },
             }}
             providers={[]}
-            redirectTo={window.location.origin + "/auth/callback"}
+            redirectTo={`${window.location.origin}/auth/callback`}
           />
         </div>
       </div>
