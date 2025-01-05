@@ -22,7 +22,7 @@ export const NoticeDetail = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const queryClient = useQueryClient();
 
-  const { data: notice, isLoading } = useNoticeQuery(id);
+  const { data: notice, isLoading, error } = useNoticeQuery(id);
   const { data: isAdmin } = useAdminStatus();
   const deleteNoticeMutation = useNoticeDelete(id);
   const togglePinMutation = useTogglePin(id);
@@ -69,6 +69,18 @@ export const NoticeDetail = () => {
 
   if (isLoading) {
     return <div className="animate-pulse bg-white rounded-lg h-48" />;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600 mb-4">Error loading notice: {error.message}</p>
+        <Button onClick={() => navigate("/notices")} variant="default">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Notices
+        </Button>
+      </div>
+    );
   }
 
   if (!notice) {

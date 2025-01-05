@@ -21,10 +21,10 @@ export const useNoticeQuery = (id: string | undefined) => {
           )
         `)
         .eq("id", id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
-      return notice as Notice;
+      return notice as Notice | null;
     },
   });
 };
