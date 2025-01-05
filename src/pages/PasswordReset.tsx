@@ -30,8 +30,19 @@ const PasswordReset = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword
+      // Get the token from the URL
+      const token = searchParams.get('token');
+      const type = searchParams.get('type');
+
+      if (!token || !type) {
+        throw new Error("Invalid reset link parameters");
+      }
+
+      // Update the user's password using the token
+      const { error } = await supabase.auth.verifyOtp({
+        token,
+        type: 'recovery',
+        newPassword: newPassword,
       });
 
       if (error) throw error;
