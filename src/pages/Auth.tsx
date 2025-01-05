@@ -20,15 +20,8 @@ const Auth = () => {
       return;
     }
 
-    // Only redirect if we have a session
-    if (session) {
-      console.log("Existing session found, redirecting to home");
-      navigate('/');
-      return; // Add return statement here
-    }
-
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_IN' && session) {
@@ -48,7 +41,7 @@ const Auth = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [session, navigate, toast, searchParams]);
+  }, [navigate, toast, searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-accent to-white py-12">
