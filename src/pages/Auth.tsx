@@ -22,12 +22,14 @@ const Auth = () => {
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
+      
       if (event === 'SIGNED_IN' && session) {
         toast({
           title: "Successfully signed in",
           duration: 2000,
         });
-        navigate('/');
+        navigate('/', { replace: true });
       }
     });
 
@@ -59,6 +61,7 @@ const Auth = () => {
                 label: 'text-sm font-medium text-gray-700',
                 button: 'w-full bg-primary text-white rounded-md py-2 hover:bg-primary/90',
                 input: 'mt-1 block w-full rounded-md border-gray-300 shadow-sm',
+                message: 'text-sm text-red-600',
               },
             }}
             supabaseClient={supabase}
@@ -67,6 +70,14 @@ const Auth = () => {
             magicLink={false}
             showLinks={true}
             view="sign_up"
+            localization={{
+              variables: {
+                sign_up: {
+                  full_name_label: 'Full Name',
+                  full_name_placeholder: 'Enter your full name',
+                }
+              }
+            }}
             additionalData={{
               full_name: {
                 required: true,

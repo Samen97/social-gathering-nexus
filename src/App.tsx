@@ -18,7 +18,14 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/auth" element={session ? <Navigate to="/" replace /> : <Auth />} />
+        <Route 
+          path="/auth" 
+          element={session ? <Navigate to="/" replace /> : <Auth />} 
+        />
+        <Route 
+          path="/auth/callback" 
+          element={<Navigate to="/" replace />} 
+        />
         <Route path="/password-reset" element={<PasswordReset />} />
         <Route 
           path="/" 
