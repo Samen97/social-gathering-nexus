@@ -49,7 +49,11 @@ const Index = () => {
               friends, and create lasting memories together in South Manchester.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="text-lg">
+              <Button 
+                size="lg" 
+                className="text-lg"
+                onClick={() => navigate("/auth")}
+              >
                 Join Our Community
               </Button>
               <Button 
