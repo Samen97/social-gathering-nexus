@@ -5,6 +5,7 @@ import About from "@/pages/About";
 import Events from "@/pages/Events";
 import EventDetail from "@/pages/EventDetail";
 import CreateEvent from "@/pages/CreateEvent";
+import CreateNotice from "@/pages/CreateNotice";
 import Notices from "@/pages/Notices";
 import Auth from "@/pages/Auth";
 import PasswordReset from "@/pages/PasswordReset";
@@ -34,7 +35,7 @@ function App() {
         />
         <Route 
           path="/notices/create" 
-          element={session ? <CreateEvent /> : <Navigate to="/auth" replace />} 
+          element={session ? <CreateNotice /> : <Navigate to="/auth" replace />} 
         />
         <Route 
           path="/admin" 
